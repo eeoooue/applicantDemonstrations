@@ -3,3 +3,7 @@ body {
   color: #FFFFFF;
   font-family: Sans-serif; 
 }
+
+textarea {
+	width:400px;
+}
