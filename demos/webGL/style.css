@@ -1,9 +1,138 @@
+/*CSS RESET*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-family: Verdana;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	vertical-align: baseline;
+}
+
+h1 {font-size:180%;}
+h2 {font-size:150%;}
+h3 {font-size:125%;}
+h4 {font-size:100%;}
+h5 {font-size:90%;}
+h6 {font-size:80%;}
+
+#wrapper
+{
+	margin:auto;
+	width:800px;
+	margin-top:30px;
+}
+
+#wrapper img
+{
+	border:solid 2px #557A95;
+}
+
+#content img
+{
+	border:solid 1px #557A95;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+#content, #footer, #nav li.selected
+{
+	background-color:#7395AE;
+	border:solid 1px #557A95;
+}
+
+#nav li.selected a
+{
+	background-color:#7395AE;
+}
+
+#content
+{
+	border-bottom:1px dashed #557A95;
+	padding:10px;
+	clear:both;
+}
+
+canvas, textarea {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+p {
+	padding:5px;
+}
+
+#footer
+{
+	border-top:0px;
+	padding:5px;
+}
+
+#nav
+{
+}
+
+#nav ul
+{
+   list-style: none;
+   margin:0px;
+   padding:0px;
+}
+
+#nav li
+{
+	text-align:center;
+	float:right;
+	margin: 0 5px 0 0;
+	border:solid 1px #557A95;	
+    border-bottom:none;	
+}
+
+#nav li a
+{
+   text-decoration:none;
+   display:block;
+   padding: 5px 15px 3px 15px;
+   background:#7395AE;
+   color:#5D5C61;
+}
+
+#nav li a:hover
+{
+   background-color:#5D5C61;
+   color:#FFFFFF;
+}
+
+#nav li.selected
+{
+	position:relative;
+	top:1px;
+	border-bottom:none;	
+}
+
+#nav li.selected a
+{
+    color:#FFFFFF;	
+}
+
 body {
-  background-color: #659DBD;
+  background-color: #B1A296;
   color: #FFFFFF;
   font-family: Sans-serif; 
 }
 
 textarea {
-	width:400px;
+	width:500px;
 }
