@@ -210,7 +210,7 @@ function reloadBuffers()
 {
 		verticesString = document.getElementById("code").value;
 		loadBuffers();
-		bindShaders();
+		bindShaders1();
 		render();
 }
 
