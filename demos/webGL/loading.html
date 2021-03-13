@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css"/>
+	<script src="scripts.js"></script>
+  </head>
+  <body onload="initialiseVBOTutorial()">
+  <script>writeHeader("reloadBuffers", "loading.html");</script>
+    <h1>Loading Vertex Buffers onto the Graphics Card</h1>
+    <p>This textbox contains a bunch of numbers. The programmer has
+	to let the graphics card know what these numbers mean. This program
+	has been set up so that the numbers are in 3 groups of 6 numbers. Each groups
+	defines one corner of the triangle. The number are in the format x, y, z, r, g, b
+	where x, y and z are the position of the corner in 3D space, and r, g and b are 
+	the red, green and blue channels that define the colour of the point.</p>
+	<h2>Try it yourself!</h2>
+	<img src="assets/cogs.png"/><p>Change the line that says:</p>
+	<p>Play with the values and send them to the graphics card by clicking update!</p>
+		<img src="assets/Pipeline.png"/>
+ <script>writeFooter();</script>	
+  </body>
+</html>
