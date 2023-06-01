@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 var gl;
 var verticesString;
 var indicesString;
