@@ -28,23 +28,27 @@ function initialiseLightingTutorial()
 
 
 	document.getElementById("code").value = fragmentShaderCode;
-	initialiseWebGL();
-	lightingPageBindShaders();
 
-	window.requestAnimationFrame(update);
+    var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode);
+
+	host.initialiseWebGL();
+	lightingPageBindShaders(host);
+
+	window.requestAnimationFrame(host.update);
 }
 
 
-function lightingPageBindShaders(){
+function lightingPageBindShaders(host){
 
-    bind_a_position();
-    bind_a_normal();
-    render();
+    host.bind_a_position();
+    host.bind_a_normal();
+    host.render();
 }
 
 
 
 function reloadPixelShader() {
+
     var vertShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertShader, vertexShaderCode);
     gl.compileShader(vertShader);
@@ -63,13 +67,3 @@ function reloadPixelShader() {
     render();
 }
 
-function update() {
-    var uRotationLocation = gl.getUniformLocation(shaderProgram, "u_rotation");
-    gl.uniform1f(uRotationLocation, rotation);
-    rotation = rotation + 0.01;
-    if (rotation > 6.28) {
-        rotation = rotation - 6.28;
-    }
-    render();
-    requestAnimationFrame(update);
-}
