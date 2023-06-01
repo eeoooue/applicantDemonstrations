@@ -23,6 +23,7 @@ function initialiseWebGL() {
 
 
 function render() {
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
 }
@@ -30,6 +31,7 @@ function render() {
 
 
 function loadBuffers() {
+
     var vertices = verticesString.split(',');
 
     indices = indicesString.split(',');
@@ -49,8 +51,6 @@ function loadBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
 }
-
-
 
 
 function loadShaders() {
