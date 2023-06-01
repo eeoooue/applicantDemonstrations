@@ -1,3 +1,5 @@
+
+
 function initialiseLightingTutorial()
 {
 	verticesString = bunnyVerticesString;
@@ -24,9 +26,45 @@ function initialiseLightingTutorial()
             '}';	
 	document.getElementById("code").value = fragmentShaderCode;
 	initialiseWebGL();
-	bindShaders2();
+	lightingPageBindShaders();
 	window.requestAnimationFrame(update);
-	document.addEventListener('keyup', onSimpleKeyUp, false);		
 }
 
 
+
+function reloadPixelShader() {
+    var vertShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vertShader, vertexShaderCode);
+    gl.compileShader(vertShader);
+
+    fragmentShaderCode = document.getElementById("code").value;
+    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fragShader, fragmentShaderCode);
+    gl.compileShader(fragShader);
+
+    shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertShader);
+    gl.attachShader(shaderProgram, fragShader);
+    gl.linkProgram(shaderProgram);
+    gl.useProgram(shaderProgram);
+    lightingPageBindShaders();
+    render();
+}
+
+function update() {
+    var uRotationLocation = gl.getUniformLocation(shaderProgram, "u_rotation");
+    gl.uniform1f(uRotationLocation, rotation);
+    rotation = rotation + 0.01;
+    if (rotation > 6.28) {
+        rotation = rotation - 6.28;
+    }
+    render();
+    requestAnimationFrame(update);
+}
+
+function lightingPageBindShaders(){
+
+    bind_a_position();
+    bind_a_normal();
+    render();
+}

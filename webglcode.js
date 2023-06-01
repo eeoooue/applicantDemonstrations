@@ -57,15 +57,11 @@ function loadBuffers() {
 
 
 
-
-
 function loadShaders() {
 
-    
     var vertShader = gl.createShader(gl.VERTEX_SHADER);
     gl.shaderSource(vertShader, vertexShaderCode);
     gl.compileShader(vertShader);
-
 
     var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
     gl.shaderSource(fragShader, fragmentShaderCode);
@@ -81,12 +77,7 @@ function loadShaders() {
 
 
 
-
-
 // camera
-
-
-
 
 function updateSimpleCameraPosition() {
     var uCamPosLocation = gl.getUniformLocation(shaderProgram, "u_cameraPosition");
@@ -99,14 +90,9 @@ function updateSimpleCameraPosition() {
 
 
 
-
-
-
 /// these call render
 
-
-
-function onSimpleKeyUp(event)
+function updateCameraPositionOnKeyUp(event)
 {
 	if (event.key == 'd')
 	{
@@ -126,98 +112,27 @@ function onSimpleKeyUp(event)
 		cameraPosition[1] = cameraPosition[1] - 0.05;
 		updateSimpleCameraPosition();	
 	}
-	
 	render();
 }
 
 
-function bindShaders1() {
+function bind_a_position(){
+
     var coord = gl.getAttribLocation(shaderProgram, "a_position");
     gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
     gl.enableVertexAttribArray(coord);
+}
 
+function bind_a_normal(){
 
-    coord = gl.getAttribLocation(shaderProgram, "a_colour");
+    var coord = gl.getAttribLocation(shaderProgram, "a_normal");
     gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
     gl.enableVertexAttribArray(coord);
-
-
-    render();
 }
 
-function bindShaders2() {
-    var coord = gl.getAttribLocation(shaderProgram, "a_position");
-    gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
-    gl.enableVertexAttribArray(coord);
+function bind_a_colour(){
 
-
-    coord = gl.getAttribLocation(shaderProgram, "a_normal");
+    var coord = gl.getAttribLocation(shaderProgram, "a_colour");
     gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
     gl.enableVertexAttribArray(coord);
-
-
-    render();
-}
-
-
-function reloadBuffers() {
-    verticesString = document.getElementById("code").value;
-    loadBuffers();
-    bindShaders1();
-    render();
-}
-
-
-function reloadPixelShader() {
-    var vertShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertShader, vertexShaderCode);
-    gl.compileShader(vertShader);
-
-    fragmentShaderCode = document.getElementById("code").value;
-    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragShader, fragmentShaderCode);
-    gl.compileShader(fragShader);
-    shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertShader);
-    gl.attachShader(shaderProgram, fragShader);
-    gl.linkProgram(shaderProgram);
-    gl.useProgram(shaderProgram);
-    bindShaders2();
-    render();
-}
-
-function reloadVertexShader() {
-    vertexShaderCode = document.getElementById("code").value;
-    var vertShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertShader, vertexShaderCode);
-    gl.compileShader(vertShader);
-
-    var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragShader, fragmentShaderCode);
-    gl.compileShader(fragShader);
-    shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram, vertShader);
-    gl.attachShader(shaderProgram, fragShader);
-    gl.linkProgram(shaderProgram);
-    gl.useProgram(shaderProgram);
-    bindShaders();
-    var uCamPosLocation = gl.getUniformLocation(shaderProgram, "u_cameraPosition");
-    gl.uniform3f(uCamPosLocation,
-        cameraPosition[0],
-        cameraPosition[1],
-        cameraPosition[2],
-        cameraPosition[3]);
-
-    render();
-}
-
-function update() {
-    var uRotationLocation = gl.getUniformLocation(shaderProgram, "u_rotation");
-    gl.uniform1f(uRotationLocation, rotation);
-    rotation = rotation + 0.01;
-    if (rotation > 6.28) {
-        rotation = rotation - 6.28;
-    }
-    render();
-    requestAnimationFrame(update);
 }

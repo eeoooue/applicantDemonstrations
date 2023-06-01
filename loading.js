@@ -18,7 +18,19 @@ function initialiseVBOTutorial()
             '}';	
 	document.getElementById("code").value = verticesString;
 	initialiseWebGL();
-	bindShaders1();
+	loadingPageBindShaders();
 }
 
+function loadingPageBindShaders(){
 
+	bind_a_position();
+    bind_a_colour();
+    render();
+}
+
+function reloadBuffers() {
+	
+    verticesString = document.getElementById("code").value;
+    loadBuffers();
+    loadingPageBindShaders();
+}
