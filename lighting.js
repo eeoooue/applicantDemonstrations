@@ -17,17 +17,29 @@ function initialiseLightingTutorial()
                ' gl_Position = rot * vec4(a_position, 1.0);\r\n' +
 			   ' v_normal = a_normal;\r\n' +
             '}';
-	document.getElementById("code").value = vertexShaderCode;
+
+
 	fragmentShaderCode = 
 			'precision mediump float;\r\n\r\n' +
 			'varying vec3 v_normal;\r\n\r\n' +
 			'void main(void) {\r\n' +
                ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
-            '}';	
+            '}';
+
+
 	document.getElementById("code").value = fragmentShaderCode;
 	initialiseWebGL();
 	lightingPageBindShaders();
+
 	window.requestAnimationFrame(update);
+}
+
+
+function lightingPageBindShaders(){
+
+    bind_a_position();
+    bind_a_normal();
+    render();
 }
 
 
@@ -60,11 +72,4 @@ function update() {
     }
     render();
     requestAnimationFrame(update);
-}
-
-function lightingPageBindShaders(){
-
-    bind_a_position();
-    bind_a_normal();
-    render();
 }
