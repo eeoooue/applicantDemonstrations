@@ -50,7 +50,7 @@ class WebGlHost {
         }
     }
 
-    render(): void {
+    public renderCycle(): void {
 
         if (!this.gl) {
             return;
@@ -130,7 +130,7 @@ class WebGlHost {
     }
 
 
-    update() {
+    public updateRotation() {
 
         if (this.gl) {
 
@@ -147,9 +147,9 @@ class WebGlHost {
             }
         }
 
-        this.render();
+        this.renderCycle();
 
-        requestAnimationFrame(this.update);
+        this.updateRotation();
     }
 
 
@@ -169,7 +169,7 @@ class WebGlHost {
         var coord = gl.getAttribLocation(this.shaderProgram, "a_position");
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
         gl.enableVertexAttribArray(coord);
-        this.render();
+        this.renderCycle();
     }
 
     bind_a_normal(): void {
@@ -187,7 +187,7 @@ class WebGlHost {
         var coord = gl.getAttribLocation(this.shaderProgram, "a_normal");
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
         gl.enableVertexAttribArray(coord);
-        this.render();
+        this.renderCycle();
     }
 
 
@@ -229,13 +229,13 @@ class WebGlHost {
 
     updateCameraPositionOnKeyUp(event: KeyboardEvent) {
 
-        if (this.moveCamera(event.key)){
+        if (this.moveCamera(event.key)) {
             this.updateSimpleCameraPosition();
         }
-        this.render();
+        this.renderCycle();
     }
 
-    moveCamera(key: string) : boolean {
+    moveCamera(key: string): boolean {
 
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
@@ -253,11 +253,11 @@ class WebGlHost {
             this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
             return true;
         }
-        
+
         return false;
     }
 
-    reloadPixelShader() : void {
+    reloadPixelShader(): void {
 
         if (!this.gl) {
             return;
@@ -265,33 +265,33 @@ class WebGlHost {
 
         var gl: WebGLRenderingContext = this.gl;
 
-    
+
         var vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader){
+        if (!vertShader) {
             return;
         }
-        
+
         gl.shaderSource(vertShader, this.vertexShaderCode);
         gl.compileShader(vertShader);
 
         const codeElement: HTMLElement | null = document.getElementById("code");
 
-        if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)){
+        if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)) {
             return;
-        } 
-        
+        }
+
         var fragmentShaderCode = codeElement.value;
 
         var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-        if (!fragShader){
+        if (!fragShader) {
             return;
         }
 
         gl.shaderSource(fragShader, fragmentShaderCode);
         gl.compileShader(fragShader);
 
-        if (!fragShader){
+        if (!fragShader) {
             return;
         }
 
@@ -300,23 +300,96 @@ class WebGlHost {
         if (!this.shaderProgram) {
             return;
         }
-    
-        
+
         gl.attachShader(this.shaderProgram, vertShader);
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
         this.lightingPageBindShaders();
-        this.render();
+        this.renderCycle();
+    }
+    
+    getCodeSnippet() : string{
+
+        const codeSection: HTMLElement | null = document.getElementById("code");
+
+        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+            return codeSection.value;
+        }
+
+        return "";
     }
 
-    lightingPageBindShaders(){
+    reloadVertexShader() {
+
+        if (!this.gl) {
+            return;
+        }
+
+        var gl: WebGLRenderingContext = this.gl;
+
+        var vertexShaderCode = this.getCodeSnippet();
+        var vertShader = gl.createShader(gl.VERTEX_SHADER);
+
+
+        if (!vertShader){
+            return;
+        }
+
+
+        gl.shaderSource(vertShader, vertexShaderCode);
+        gl.compileShader(vertShader);
+
+        // I commented this out because fragmentShaderCode never changes (?)
+        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+        if (!fragShader){
+            return;
+        }
+
+
+        gl.shaderSource(fragShader, this.fragmentShaderCode);
+        gl.compileShader(fragShader);
+
+
+        this.shaderProgram = gl.createProgram();
+
+        if (!this.shaderProgram){
+            return;
+        }
+
+        gl.attachShader(this.shaderProgram, vertShader);
+        gl.attachShader(this.shaderProgram, fragShader);
+        gl.linkProgram(this.shaderProgram);
+        gl.useProgram(this.shaderProgram);
+
+        // nothing was here before as it was calling plainly BindShaders() which doesnt exist
+        // cameraPageBindShaders();
+
+        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
+        gl.uniform3f(uCamPosLocation,
+            this.cameraPosition[0],
+            this.cameraPosition[1],
+            this.cameraPosition[2]
+            //, this.cameraPosition[3]
+            );
+
+        this.renderCycle();
+    }
+
+    cameraPageBindShaders() {
 
         this.bind_a_position();
         this.bind_a_normal();
-        this.render();
+        this.renderCycle();
     }
-    
+
+    lightingPageBindShaders() {
+
+        this.bind_a_position();
+        this.bind_a_normal();
+        this.renderCycle();
+    }
 }
 
 
@@ -352,18 +425,65 @@ function initialiseLightingTutorial(bunnyVerticesString: string, bunnyIndicesStr
 
 
 
-    const codeSection : HTMLElement | null = document.getElementById("code");
+    const codeSection: HTMLElement | null = document.getElementById("code");
 
-    if (codeSection && codeSection instanceof HTMLTextAreaElement){
+    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
         codeSection.value = fragmentShaderCode;
         var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
         host.lightingPageBindShaders();
-        window.requestAnimationFrame(host.update);
+        // window.requestAnimationFrame(host.updateRotation);
     }
 }
 
 
 
+function initialiseCameraTutorial(sphereVerticesString: string, sphereIndicesString: string) {
 
+    const verticesString = sphereVerticesString;
+    const indicesString = sphereIndicesString;
+
+    var cameraPosition = [0.0, 0.0, 0.0];
+    var vertexShaderCode =
+        'attribute vec3 a_position;\r\n' +
+        'attribute vec3 a_normal;\r\n\r\n' +
+        'uniform vec3 u_cameraPosition;\r\n\r\n' +
+        'varying vec4 v_colour;\r\n\r\n' +
+        'void main(void) {\r\n' +
+        ' gl_Position = vec4(a_position, 1.0);\r\n' +
+        ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
+        '}';
+
+
+    // temporary assignment below for personal testing
+    vertexShaderCode =
+        'attribute vec3 a_position;\r\n' +
+        'attribute vec3 a_normal;\r\n\r\n' +
+        'uniform vec3 u_cameraPosition;\r\n\r\n' +
+        'varying vec4 v_colour;\r\n\r\n' +
+        'void main(void) {\r\n' +
+        ' gl_Position = vec4(a_position - u_cameraPosition, 1.0);\r\n' +
+        ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
+        '}';
+
+
+    var fragmentShaderCode =
+        'precision mediump float;' +
+        'varying vec4 v_colour;' +
+        'void main(void) {' +
+        ' gl_FragColor = v_colour;' +
+        '}';
+
+    const codeSection: HTMLElement | null = document.getElementById("code");
+
+    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+
+        codeSection.value = vertexShaderCode;
+        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+        host.cameraPageBindShaders();
+
+        document.addEventListener('keyup', host.updateCameraPositionOnKeyUp, false);
+    }
+
+}
 
