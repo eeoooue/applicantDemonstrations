@@ -1,5 +1,7 @@
 
 
+
+
 class WebGlHost {
 
     public gl: WebGLRenderingContext | null;
@@ -7,17 +9,18 @@ class WebGlHost {
     public indicesString;
     public vertexShaderCode;
     public fragmentShaderCode;
-    public cameraPosition;
+    public cameraPosition: number[] = [0.0, 0.0, 0.0];
     public rotation = 0;
     public indices;
     public shaderProgram: WebGLProgram | null;
 
-    constructor(verticesString, indicesString, vertexShaderCode, fragmentShaderCode) {
+    constructor(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition) {
 
         this.verticesString = verticesString;
         this.indicesString = indicesString;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
+        this.cameraPosition = cameraPosition;
 
 
         this.initialiseWebGL();
@@ -224,36 +227,143 @@ class WebGlHost {
             this.cameraPosition[2]);
     }
 
-    updateCameraPositionOnKeyUp(event) {
+    updateCameraPositionOnKeyUp(event: KeyboardEvent) {
 
-        if (this.moveCamera(event)){
+        if (this.moveCamera(event.key)){
             this.updateSimpleCameraPosition();
         }
         this.render();
     }
 
-    moveCamera(event) : boolean {
+    moveCamera(key: string) : boolean {
 
-        if (event.key == 'd') {
+        if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
             return true;
         }
-        else if (event.key == 'a') {
+        else if (key == 'a') {
             this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
             return true;
         }
-        else if (event.key == 'w') {
+        else if (key == 'w') {
             this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
             return true;
         }
-        else if (event.key == 's') {
+        else if (key == 's') {
             this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
             return true;
         }
         
         return false;
     }
+
+    reloadPixelShader() : void {
+
+        if (!this.gl) {
+            return;
+        }
+
+        var gl: WebGLRenderingContext = this.gl;
+
+    
+        var vertShader = gl.createShader(gl.VERTEX_SHADER);
+        if (!vertShader){
+            return;
+        }
+        
+        gl.shaderSource(vertShader, this.vertexShaderCode);
+        gl.compileShader(vertShader);
+
+        const codeElement: HTMLElement | null = document.getElementById("code");
+
+        if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)){
+            return;
+        } 
+        
+        var fragmentShaderCode = codeElement.value;
+
+        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+
+        if (!fragShader){
+            return;
+        }
+
+        gl.shaderSource(fragShader, fragmentShaderCode);
+        gl.compileShader(fragShader);
+
+        if (!fragShader){
+            return;
+        }
+
+        this.shaderProgram = gl.createProgram();
+
+        if (!this.shaderProgram) {
+            return;
+        }
+    
+        
+        gl.attachShader(this.shaderProgram, vertShader);
+        gl.attachShader(this.shaderProgram, fragShader);
+        gl.linkProgram(this.shaderProgram);
+        gl.useProgram(this.shaderProgram);
+        this.lightingPageBindShaders();
+        this.render();
+    }
+
+    lightingPageBindShaders(){
+
+        this.bind_a_position();
+        this.bind_a_normal();
+        this.render();
+    }
+    
 }
+
+
+
+
+
+
+function initialiseLightingTutorial(bunnyVerticesString: string, bunnyIndicesString: string) {
+
+    const verticesString = bunnyVerticesString;
+    const indicesString = bunnyIndicesString;
+    var cameraPosition: number[] = [0.0, 0.0, 0.0];
+    var vertexShaderCode: string =
+        'attribute vec3 a_position;\r\n' +
+        'attribute vec3 a_normal;\r\n\r\n' +
+        'uniform float u_rotation;\r\n\r\n' +
+        'varying vec3 v_normal;\r\n\r\n' +
+        'void main(void) {\r\n' +
+        'float c = cos(u_rotation);' +
+        'float s = sin(u_rotation);' +
+        'mat4 rot = mat4 (c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1);' +
+        ' gl_Position = rot * vec4(a_position, 1.0);\r\n' +
+        ' v_normal = a_normal;\r\n' +
+        '}';
+
+
+    var fragmentShaderCode: string =
+        'precision mediump float;\r\n\r\n' +
+        'varying vec3 v_normal;\r\n\r\n' +
+        'void main(void) {\r\n' +
+        ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
+        '}';
+
+
+
+    const codeSection : HTMLElement | null = document.getElementById("code");
+
+    if (codeSection && codeSection instanceof HTMLTextAreaElement){
+
+        codeSection.value = fragmentShaderCode;
+        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+        host.lightingPageBindShaders();
+        window.requestAnimationFrame(host.update);
+    }
+}
+
+
 
 
 
