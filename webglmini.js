@@ -8,8 +8,8 @@ var rotation = 0;
 var indices;
 
 
-
 function initialiseWebGL() {
+
     canvas = document.getElementById("webGLCanvas");
     gl = canvas.getContext("webgl");
     gl.clearColor(0.2, 0.2, 0.2, 1.0);
@@ -31,11 +31,6 @@ function render() {
 
 function loadBuffers() {
     var vertices = verticesString.split(',');
-    [
-        0.0, 0.75, 0.0, 1.0, 0.0, 0.0,
-        -0.75, -0.75, 0.0, 0.0, 1.0, 0.0,
-        0.75, -0.75, 0.0, 0.0, 0.0, 1.0
-    ];
 
     indices = indicesString.split(',');
 
