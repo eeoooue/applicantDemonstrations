@@ -51,87 +51,6 @@ function writeHeader2(page)
 	document.write(getHeader(page));
 }
 
-function initialiseVBOTutorial()
-{
-	verticesString = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0"
-	indicesString = "0,1,2";
-	vertexShaderCode =
-            'attribute vec3 a_position;' +
-			'attribute vec3 a_colour;' +
-			'varying vec4 v_colour;' +
-            'void main(void) {' +
-               ' gl_Position = vec4(a_position, 1.0);' +
-			   ' v_colour = vec4(a_colour, 1.0);' +
-            '}';
-	fragmentShaderCode = 
-			'precision mediump float;' +
-			'varying vec4 v_colour;' +
-			'void main(void) {' +
-               ' gl_FragColor = v_colour;' +
-            '}';	
-	document.getElementById("code").value = verticesString;
-	initialiseWebGL();
-	bindShaders1();
-}
-
-function initialiseCameraTutorial()
-{
-	verticesString = sphereVerticesString;
-	indicesString = sphereIndicesString;
-	cameraPosition = [ 0.0, 0.0, 0.0]; 
-	vertexShaderCode =
-            'attribute vec3 a_position;\r\n' +
-			'attribute vec3 a_normal;\r\n\r\n' +
-			'uniform vec3 u_cameraPosition;\r\n\r\n' +
-			'varying vec4 v_colour;\r\n\r\n' +
-            'void main(void) {\r\n' +
-               ' gl_Position = vec4(a_position, 1.0);\r\n' +
-			   ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
-            '}';
-	document.getElementById("code").value = vertexShaderCode;
-	fragmentShaderCode = 
-			'precision mediump float;' +
-			'varying vec4 v_colour;' +
-			'void main(void) {' +
-               ' gl_FragColor = v_colour;' +
-            '}';	
-	document.getElementById("code").value = vertexShaderCode;
-	initialiseWebGL();
-	bindShaders2();
-	document.addEventListener('keyup', onSimpleKeyUp, false);	
-}
-
-function initialiseLightingTutorial()
-{
-	verticesString = bunnyVerticesString;
-	indicesString = bunnyIndicesString;
-	cameraPosition = [ 0.0, 0.0, 0.0]; 
-	vertexShaderCode =
-            'attribute vec3 a_position;\r\n' +
-			'attribute vec3 a_normal;\r\n\r\n' +
-			'uniform float u_rotation;\r\n\r\n' +
-			'varying vec3 v_normal;\r\n\r\n' +
-            'void main(void) {\r\n' +
-			'float c = cos(u_rotation);'+
-			'float s = sin(u_rotation);'+
-			'mat4 rot = mat4 (c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1);'+
-               ' gl_Position = rot * vec4(a_position, 1.0);\r\n' +
-			   ' v_normal = a_normal;\r\n' +
-            '}';
-	document.getElementById("code").value = vertexShaderCode;
-	fragmentShaderCode = 
-			'precision mediump float;\r\n\r\n' +
-			'varying vec3 v_normal;\r\n\r\n' +
-			'void main(void) {\r\n' +
-               ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
-            '}';	
-	document.getElementById("code").value = fragmentShaderCode;
-	initialiseWebGL();
-	bindShaders2();
-	window.requestAnimationFrame(update);
-	document.addEventListener('keyup', onSimpleKeyUp, false);		
-}
-
 function writeForm(callback)
 {
 	document.write("<form action=\"javascript:" + callback + "()\">\
@@ -140,17 +59,7 @@ function writeForm(callback)
 		</form>");
 }
 
-function initialiseWebGL()
-{
-    canvas = document.getElementById("webGLCanvas");
-    gl = canvas.getContext("webgl");
-    gl.clearColor(0.2, 0.2, 0.2, 1.0);
-    gl.enable(gl.DEPTH_TEST);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.viewport(0,0,canvas.width,canvas.height);	  
-	loadBuffers();	  
-	loadShaders();
-}
+
 
 function render()
 {
@@ -204,6 +113,18 @@ function bindShaders2()
          gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
          gl.enableVertexAttribArray(coord);
 		 render();
+}
+
+function initialiseWebGL()
+{
+    canvas = document.getElementById("webGLCanvas");
+    gl = canvas.getContext("webgl");
+    gl.clearColor(0.2, 0.2, 0.2, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.viewport(0,0,canvas.width,canvas.height);	  
+	loadBuffers();	  
+	loadShaders();
 }
 
 function reloadBuffers()
@@ -297,29 +218,7 @@ function update()
 	requestAnimationFrame(update);
 }
 
-function onSimpleKeyUp(event)
-{
-	if (event.key == 'd')
-	{
-		cameraPosition[0] = cameraPosition[0] + 0.05;
-		updateSimpleCameraPosition();
-	}
-	else if (event.key == 'a')
-	{
-		cameraPosition[0] = cameraPosition[0] - 0.05;
-		updateSimpleCameraPosition();	}
-	else if (event.key == 'w')
-	{
-		cameraPosition[1] = cameraPosition[1] + 0.05;
-		updateSimpleCameraPosition();	}	
-	else if (event.key == 's')
-	{
-		cameraPosition[1] = cameraPosition[1] - 0.05;
-		updateSimpleCameraPosition();	
-	}
-	
-	render();
-}
+
 
 function writeFooter()
 {

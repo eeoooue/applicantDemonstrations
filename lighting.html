@@ -1,38 +1,43 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="style.css"/>
+
+<head>
+	<link rel="stylesheet" href="style.css" />
 	<script src="bunny.js"></script>
-	<script src="happy.js"></script>
-	<script src="dillo.js"></script>
-	<script src="tyra.js"></script>
+	<script src="lighting.js"></script>
 	<script src="scripts.js"></script>
-  </head>
-  <body onload="initialiseLightingTutorial()">
-  <script>writeHeader("reloadPixelShader", "lighting.html");</script>
-    <h1>Let There Be Light!</h1>
-<p>After the vertex shader the newly transformed vertices are group into triangles, and 
-sent to the rasterizer, which splits the triangles into pixels. Then, for every pixel in the
-scene the pixel shader is run. Again, the graphics card enables this process to be executed for thousands of pixels at the same time.</p>
-<p>Here the program has been set up so that we know the normal vector for each pixel. The normal
-vector is a vector that points straight out of the surface. At the moment this vector is being used
-to colour the model, but we're going to adapt the pixel shader to add some moody lighting to the scene.</p>
-<p>To do this, we're simply going to pick a direction for the light, and use a special thing called
-a dot product to scale the amount of light we apply to each pixel. This simulates diffuse light from a far away source, like the sun.</p>
+</head>
+
+<body onload="initialiseLightingTutorial()">
+	<script>writeHeader("reloadPixelShader", "lighting.html");</script>
+	<h1>Let There Be Light!</h1>
+	<p>After the vertex shader the newly transformed vertices are group into triangles, and
+		sent to the rasterizer, which splits the triangles into pixels. Then, for every pixel in the
+		scene the pixel shader is run. Again, the graphics card enables this process to be executed for thousands of
+		pixels at the same time.</p>
+	<p>Here the program has been set up so that we know the normal vector for each pixel. The normal
+		vector is a vector that points straight out of the surface. At the moment this vector is being used
+		to colour the model, but we're going to adapt the pixel shader to add some moody lighting to the scene.</p>
+	<p>To do this, we're simply going to pick a direction for the light, and use a special thing called
+		a dot product to scale the amount of light we apply to each pixel. This simulates diffuse light from a far away
+		source, like the sun.</p>
 	<div class="tryIt">
-	<h2><img src="assets/cogs.png"/>Try it yourself!</h2><p>Change the line that says:</p>
-<pre>gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);</pre>
-	<p>to</p><pre>vec3 lightDirection = vec3(1,0,0);
+		<h2><img src="assets/cogs.png" />Try it yourself!</h2>
+		<p>Change the line that says:</p>
+		<pre>gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);</pre>
+		<p>to</p>
+		<pre>vec3 lightDirection = vec3(1,0,0);
 	
 float diff = max(dot(v_normal, normalize(lightDirection)), 0.0);
 	
 gl_FragColor = vec4(diff, diff, diff, 1.0);</pre>
-	<p>then click update.</p>
-	<p>Experiment by changing the lightDirection to different sets of three numbers.</p>
-	<p>You can also add some colour by multiplying a colour by the diffuse scalar.
-<pre>gl_FragColor = vec4(diff * vec3(1.0, 0.0, 0.0), 1.0);</pre>
-	</div>  	
+		<p>then click update.</p>
+		<p>Experiment by changing the lightDirection to different sets of three numbers.</p>
+		<p>You can also add some colour by multiplying a colour by the diffuse scalar.
+		<pre>gl_FragColor = vec4(diff * vec3(1.0, 0.0, 0.0), 1.0);</pre>
+	</div>
 	<h2>Simplified Graphics Pipeline</h2>
-	<img src="assets/Pipeline.png"/>
-  <script>writeFooter();</script>	
-  </body>
+	<img src="assets/Pipeline.png" />
+	<script>writeFooter();</script>
+</body>
+
 </html>

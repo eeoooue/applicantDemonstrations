@@ -1,31 +1,37 @@
 <html>
-  <head>
-    <link rel="stylesheet" href="style.css"/>
-	<script src="sphere.js"></script>
-	<script src="scripts.js"></script>
-  </head>
-  <body onload="initialiseCameraTutorial()">
+
+<head>
+  <link rel="stylesheet" href="style.css" />
+  <script src="sphere.js"></script>
+  <script src="camera.js"></script>
+  <script src="scripts.js"></script>
+</head>
+
+<body onload="initialiseCameraTutorial()">
   <script>writeHeader("reloadVertexShader", "camera.html");</script>
   <h2>Moving Vertices in the Vertex Shader</h2>
   <p>Once we've loaded data onto the card and made a draw call to send that
-  data down the pipeline the vertex data arrives at the vertex shader. The vertex shader
-  is run once for every vertex that was sent down the pipe, but remember, the power of
-  the graphics card is that it can process thousands of vertices at the same time!</p><p>Here, we're
-  going to edit the shader so that we can move the camera around the model. Actually,
-  instead of moving the camera we're going to make it seem like the camera is moving by
-  moving everything else around the camera - so instead of moving the camera to the left
-  we'll move everything else to the right. To do this in the vertex shader we need
-  to subtract the camera position from each vertex position.</p>
-	<div class="tryIt">
-	<h2><img src="assets/cogs.png"/>Try it yourself!</h2><p>Change the line that says:</p>
-	<pre>gl_Position = vec4(a_position, 1.0);</pre>
-	<p>to</p>
-	<pre>gl_Position = vec4(a_position - u_cameraPosition, 1.0);</pre>
-	<p>then click update.</p>
-	<p>Clicking w, a, s and d should now move the camera in the appropriate direction.</p>
-   	</div>
-	<h2>Simplified Graphics Pipeline</h2>
-	<img src="assets/Pipeline.png"/>
-   <script>writeFooter();</script>
-  </body>
+    data down the pipeline the vertex data arrives at the vertex shader. The vertex shader
+    is run once for every vertex that was sent down the pipe, but remember, the power of
+    the graphics card is that it can process thousands of vertices at the same time!</p>
+  <p>Here, we're
+    going to edit the shader so that we can move the camera around the model. Actually,
+    instead of moving the camera we're going to make it seem like the camera is moving by
+    moving everything else around the camera - so instead of moving the camera to the left
+    we'll move everything else to the right. To do this in the vertex shader we need
+    to subtract the camera position from each vertex position.</p>
+  <div class="tryIt">
+    <h2><img src="assets/cogs.png" />Try it yourself!</h2>
+    <p>Change the line that says:</p>
+    <pre>gl_Position = vec4(a_position, 1.0);</pre>
+    <p>to</p>
+    <pre>gl_Position = vec4(a_position - u_cameraPosition, 1.0);</pre>
+    <p>then click update.</p>
+    <p>Clicking w, a, s and d should now move the camera in the appropriate direction.</p>
+  </div>
+  <h2>Simplified Graphics Pipeline</h2>
+  <img src="assets/Pipeline.png" />
+  <script>writeFooter();</script>
+</body>
+
 </html>
