@@ -29,3 +29,4 @@ function initialiseLightingTutorial()
 	document.addEventListener('keyup', onSimpleKeyUp, false);		
 }
 
+

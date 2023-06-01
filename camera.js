@@ -1,51 +1,26 @@
 
-function initialiseCameraTutorial()
-{
+function initialiseCameraTutorial() {
 	verticesString = sphereVerticesString;
 	indicesString = sphereIndicesString;
-	cameraPosition = [ 0.0, 0.0, 0.0]; 
+	cameraPosition = [0.0, 0.0, 0.0];
 	vertexShaderCode =
-            'attribute vec3 a_position;\r\n' +
-			'attribute vec3 a_normal;\r\n\r\n' +
-			'uniform vec3 u_cameraPosition;\r\n\r\n' +
-			'varying vec4 v_colour;\r\n\r\n' +
-            'void main(void) {\r\n' +
-               ' gl_Position = vec4(a_position, 1.0);\r\n' +
-			   ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
-            '}';
+		'attribute vec3 a_position;\r\n' +
+		'attribute vec3 a_normal;\r\n\r\n' +
+		'uniform vec3 u_cameraPosition;\r\n\r\n' +
+		'varying vec4 v_colour;\r\n\r\n' +
+		'void main(void) {\r\n' +
+		' gl_Position = vec4(a_position, 1.0);\r\n' +
+		' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
+		'}';
 	document.getElementById("code").value = vertexShaderCode;
-	fragmentShaderCode = 
-			'precision mediump float;' +
-			'varying vec4 v_colour;' +
-			'void main(void) {' +
-               ' gl_FragColor = v_colour;' +
-            '}';	
+	fragmentShaderCode =
+		'precision mediump float;' +
+		'varying vec4 v_colour;' +
+		'void main(void) {' +
+		' gl_FragColor = v_colour;' +
+		'}';
 	document.getElementById("code").value = vertexShaderCode;
 	initialiseWebGL();
 	bindShaders2();
-	document.addEventListener('keyup', onSimpleKeyUp, false);	
-}
-
-function onSimpleKeyUp(event)
-{
-	if (event.key == 'd')
-	{
-		cameraPosition[0] = cameraPosition[0] + 0.05;
-		updateSimpleCameraPosition();
-	}
-	else if (event.key == 'a')
-	{
-		cameraPosition[0] = cameraPosition[0] - 0.05;
-		updateSimpleCameraPosition();	}
-	else if (event.key == 'w')
-	{
-		cameraPosition[1] = cameraPosition[1] + 0.05;
-		updateSimpleCameraPosition();	}	
-	else if (event.key == 's')
-	{
-		cameraPosition[1] = cameraPosition[1] - 0.05;
-		updateSimpleCameraPosition();	
-	}
-	
-	render();
+	document.addEventListener('keyup', onSimpleKeyUp, false);
 }
