@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 var gl;
 var verticesString;
 var indicesString;
@@ -77,46 +88,6 @@ function loadShaders() {
 }
 
 
-
-// camera
-
-function updateSimpleCameraPosition() {
-    var uCamPosLocation = gl.getUniformLocation(shaderProgram, "u_cameraPosition");
-    gl.uniform3f(uCamPosLocation,
-        cameraPosition[0],
-        cameraPosition[1],
-        cameraPosition[2],
-        cameraPosition[3]);
-}
-
-
-
-/// these call render
-
-function updateCameraPositionOnKeyUp(event)
-{
-	if (event.key == 'd')
-	{
-		cameraPosition[0] = cameraPosition[0] + 0.05;
-		updateSimpleCameraPosition();
-	}
-	else if (event.key == 'a')
-	{
-		cameraPosition[0] = cameraPosition[0] - 0.05;
-		updateSimpleCameraPosition();	}
-	else if (event.key == 'w')
-	{
-		cameraPosition[1] = cameraPosition[1] + 0.05;
-		updateSimpleCameraPosition();	}	
-	else if (event.key == 's')
-	{
-		cameraPosition[1] = cameraPosition[1] - 0.05;
-		updateSimpleCameraPosition();	
-	}
-	render();
-}
-
-
 function bind_a_position(){
 
     var coord = gl.getAttribLocation(shaderProgram, "a_position");
@@ -127,13 +98,6 @@ function bind_a_position(){
 function bind_a_normal(){
 
     var coord = gl.getAttribLocation(shaderProgram, "a_normal");
-    gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
-    gl.enableVertexAttribArray(coord);
-}
-
-function bind_a_colour(){
-
-    var coord = gl.getAttribLocation(shaderProgram, "a_colour");
     gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
     gl.enableVertexAttribArray(coord);
 }
