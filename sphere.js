@@ -487,5 +487,5 @@ sphereIndicesString = "\
 
 
 function loadCameraPage(){
-    initialiseCameraTutorial(sphereVerticesString, sphereIndicesString);
+    PageLoader.initialiseCameraTutorial(sphereVerticesString, sphereIndicesString);
 }

@@ -41769,5 +41769,5 @@ bunnyIndicesString = "\
 
 
 function LoadBunnyPage(){
-    initialiseLightingTutorial(bunnyVerticesString, bunnyIndicesString);
+    PageLoader.initialiseLightingTutorial(bunnyVerticesString, bunnyIndicesString);
 }

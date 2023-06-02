@@ -1,7 +1,4 @@
 
-
-
-
 class WebGlHost {
 
     public gl: WebGLRenderingContext | null;
@@ -21,11 +18,8 @@ class WebGlHost {
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
         this.cameraPosition = cameraPosition;
-
-
         this.initialiseWebGL();
     }
-
 
     private initialiseWebGL(): void {
 
@@ -414,112 +408,162 @@ class WebGlHost {
 }
 
 
-function initialiseLightingTutorial(bunnyVerticesString: string, bunnyIndicesString: string) {
-
-    const verticesString = bunnyVerticesString;
-    const indicesString = bunnyIndicesString;
-    var cameraPosition: number[] = [0.0, 0.0, 0.0];
-    var vertexShaderCode: string =
-        'attribute vec3 a_position;\r\n' +
-        'attribute vec3 a_normal;\r\n\r\n' +
-        'uniform float u_rotation;\r\n\r\n' +
-        'varying vec3 v_normal;\r\n\r\n' +
-        'void main(void) {\r\n' +
-        'float c = cos(u_rotation);' +
-        'float s = sin(u_rotation);' +
-        'mat4 rot = mat4 (c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1);' +
-        ' gl_Position = rot * vec4(a_position, 1.0);\r\n' +
-        ' v_normal = a_normal;\r\n' +
-        '}';
 
 
-    var fragmentShaderCode: string =
-        'precision mediump float;\r\n\r\n' +
-        'varying vec3 v_normal;\r\n\r\n' +
-        'void main(void) {\r\n' +
-        ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
-        '}';
+class PageBuilder {
+
+    private static getHeader(page: string): string {
+        var header = '\
+        <div id="wrapper">\
+            <h1 style=\"padding:15px;">Code Along at https://tinyurl.com/ct5nrhtd</h1>\
+            <div id="nav">\
+            <ul>';
+        var links = new Array("Setting the Scene", "index.html", "Graphics Pipeline", "pipeline.html", "Loading Data", "loading.html", "Camera Control", "camera.html", "Lighting", "lighting.html");
+        for (var i = links.length - 2; i >= 0; i -= 2) {
+            header = header + '<li';
+            if (links[i + 1] == page) {
+                header = header + ' class="selected"';
+            }
+            header = header + '>\
+                <a href="' + links[i + 1] + '">' + links[i] + '</a>\
+                </li>';
+        }
+        header = header + '\
+            </ul>\
+            </div>\
+            <div id="content">';
+        return header;
+    }
 
 
+    public static writeHeader(callbackSignature: string, page: string): void {
+        document.write(this.getHeader(page));
+        document.write("<canvas width = \"500\" height = \"500\" id = \"webGLCanvas\"></canvas>");
+        this.writeForm(callbackSignature);
+    }
 
-    const codeSection: HTMLElement | null = document.getElementById("code");
+    public static writeHeader2(page: string): void {
 
-    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+        document.write(this.getHeader(page));
+    }
 
-        codeSection.value = fragmentShaderCode;
-        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
-        host.lightingPageBindShaders();
-        // window.requestAnimationFrame(host.updateRotation);
+    private static writeForm(callbackSignature: string): void {
+        document.write("<form action=\"javascript:" + callbackSignature + "()\">\
+            <textarea id=\"code\" name=\"vs\" rows=\"15\" cols=\"50\"></textarea>\
+              <input type=\"submit\" value=\"Update\">\
+            </form>");
+    }
+
+    public static writeFooter(): void {
+        document.write("</div><div id=\"footer\"><p><b>Simon Grey</b> - <i>S.Grey@hull.ac.uk</i></p></div></div>");
     }
 }
 
 
 
-function initialiseCameraTutorial(sphereVerticesString: string, sphereIndicesString: string) {
+class PageLoader {
 
-    const verticesString = sphereVerticesString;
-    const indicesString = sphereIndicesString;
+    public static initialiseLightingTutorial(bunnyVerticesString: string, bunnyIndicesString: string) {
 
-    var cameraPosition = [0.0, 0.0, 0.0];
+        const verticesString = bunnyVerticesString;
+        const indicesString = bunnyIndicesString;
+        var cameraPosition: number[] = [0.0, 0.0, 0.0];
+        var vertexShaderCode: string =
+            'attribute vec3 a_position;\r\n' +
+            'attribute vec3 a_normal;\r\n\r\n' +
+            'uniform float u_rotation;\r\n\r\n' +
+            'varying vec3 v_normal;\r\n\r\n' +
+            'void main(void) {\r\n' +
+            'float c = cos(u_rotation);' +
+            'float s = sin(u_rotation);' +
+            'mat4 rot = mat4 (c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1);' +
+            ' gl_Position = rot * vec4(a_position, 1.0);\r\n' +
+            ' v_normal = a_normal;\r\n' +
+            '}';
 
-    // temporary assignment below for personal testing
-    var vertexShaderCode =
-        'attribute vec3 a_position;\r\n' +
-        'attribute vec3 a_normal;\r\n\r\n' +
-        'uniform vec3 u_cameraPosition;\r\n\r\n' +
-        'varying vec4 v_colour;\r\n\r\n' +
-        'void main(void) {\r\n' +
-        ' gl_Position = vec4(a_position - u_cameraPosition, 1.0);\r\n' +
-        ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
-        '}';
+        var fragmentShaderCode: string =
+            'precision mediump float;\r\n\r\n' +
+            'varying vec3 v_normal;\r\n\r\n' +
+            'void main(void) {\r\n' +
+            ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
+            '}';
 
+        const codeSection: HTMLElement | null = document.getElementById("code");
 
-    var fragmentShaderCode =
-        'precision mediump float;' +
-        'varying vec4 v_colour;' +
-        'void main(void) {' +
-        ' gl_FragColor = v_colour;' +
-        '}';
+        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
-    const codeSection: HTMLElement | null = document.getElementById("code");
-
-    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
-
-        codeSection.value = vertexShaderCode;
-        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
-        host.cameraPageBindShaders();
-        host.setupCameraMovement();
+            codeSection.value = fragmentShaderCode;
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            host.lightingPageBindShaders();
+            // window.requestAnimationFrame(host.updateRotation);
+        }
     }
 
-}
+    public static initialiseCameraTutorial(sphereVerticesString: string, sphereIndicesString: string) {
+
+        const verticesString = sphereVerticesString;
+        const indicesString = sphereIndicesString;
+
+        var cameraPosition = [0.0, 0.0, 0.0];
+
+        // temporary assignment below for personal testing
+        var vertexShaderCode =
+            'attribute vec3 a_position;\r\n' +
+            'attribute vec3 a_normal;\r\n\r\n' +
+            'uniform vec3 u_cameraPosition;\r\n\r\n' +
+            'varying vec4 v_colour;\r\n\r\n' +
+            'void main(void) {\r\n' +
+            ' gl_Position = vec4(a_position - u_cameraPosition, 1.0);\r\n' +
+            ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
+            '}';
 
 
-function initialiseVBOTutorial(verticesString: string, indicesString: string) {
-    // camera pos doesnt change for this example
-    var cameraPosition = [0.0, 0.0, 0.0];
+        var fragmentShaderCode =
+            'precision mediump float;' +
+            'varying vec4 v_colour;' +
+            'void main(void) {' +
+            ' gl_FragColor = v_colour;' +
+            '}';
 
-    var vertexShaderCode =
-        'attribute vec3 a_position;' +
-        'attribute vec3 a_colour;' +
-        'varying vec4 v_colour;' +
-        'void main(void) {' +
-        ' gl_Position = vec4(a_position, 1.0);' +
-        ' v_colour = vec4(a_colour, 1.0);' +
-        '}';
+        const codeSection: HTMLElement | null = document.getElementById("code");
 
-    var fragmentShaderCode =
-        'precision mediump float;' +
-        'varying vec4 v_colour;' +
-        'void main(void) {' +
-        ' gl_FragColor = v_colour;' +
-        '}';
+        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
-    const codeSection: HTMLElement | null = document.getElementById("code");
+            codeSection.value = vertexShaderCode;
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            host.cameraPageBindShaders();
+            host.setupCameraMovement();
+        }
+    }
 
-    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+    public static initialiseVBOTutorial(verticesString: string, indicesString: string) {
+        // camera pos doesnt change for this example
+        var cameraPosition = [0.0, 0.0, 0.0];
 
-        codeSection.value = verticesString;
-        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
-        host.loadingPageBindShaders();
+        var vertexShaderCode =
+            'attribute vec3 a_position;' +
+            'attribute vec3 a_colour;' +
+            'varying vec4 v_colour;' +
+            'void main(void) {' +
+            ' gl_Position = vec4(a_position, 1.0);' +
+            ' v_colour = vec4(a_colour, 1.0);' +
+            '}';
+
+        var fragmentShaderCode =
+            'precision mediump float;' +
+            'varying vec4 v_colour;' +
+            'void main(void) {' +
+            ' gl_FragColor = v_colour;' +
+            '}';
+
+        const codeSection: HTMLElement | null = document.getElementById("code");
+
+        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+
+            codeSection.value = verticesString;
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            host.loadingPageBindShaders();
+        }
     }
 }
+
