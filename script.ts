@@ -6,21 +6,25 @@ class WebGlHost {
     public indicesString;
     public indices;
 
-    public vertexShaderCode : string;
-    public fragmentShaderCode : string;
+    public vertexShaderCode: string;
+    public fragmentShaderCode: string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
     public rotation = 0;
 
     public shaderProgram: WebGLProgram | null;
 
-    constructor(verticesString, indicesString, vertexShaderCode : string, fragmentShaderCode : string, cameraPosition: number[]) {
+    public pageString: string;
+
+    constructor(verticesString, indicesString, vertexShaderCode: string, fragmentShaderCode: string, cameraPosition: number[], pageString: string) {
 
         this.verticesString = verticesString;
         this.indicesString = indicesString;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
         this.cameraPosition = cameraPosition;
+        this.pageString = pageString;
         this.initialiseWebGL();
+        this.addButtonListener();
     }
 
     private initialiseWebGL(): void {
@@ -43,6 +47,33 @@ class WebGlHost {
             gl.viewport(0, 0, canvas.width, canvas.height);
             this.loadBuffers();
             this.loadShaders();
+        }
+    }
+
+    public addButtonListener(): void {
+
+        var button = document.getElementById("update-button")
+
+        button?.addEventListener("click", () => {
+            this.clickEvent();
+        })
+    }
+
+    public clickEvent(): void {
+
+        switch (this.pageString) {
+
+            case "loading":
+                console.log("you clicked the button on the loading page!")
+                return;
+
+            case "camera":
+                console.log("you clicked the button on the camera page!")
+                return;
+
+            case "lighting":
+                console.log("you clicked the button on the lighting page!")
+                return;
         }
     }
 
@@ -124,11 +155,6 @@ class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-
-
-    
-
-
 
     bind_a_position(): void {
 
@@ -388,9 +414,9 @@ class WebGlHost {
         }, false);
     }
 
-    public startRotationLoop(){
+    public startRotationLoop() {
 
-        window.requestAnimationFrame(() => {this.updateRotation()});
+        window.requestAnimationFrame(() => { this.updateRotation() });
     }
 
     public updateRotation() {
@@ -412,7 +438,7 @@ class WebGlHost {
 
         this.renderCycle();
 
-        window.requestAnimationFrame(() => {this.updateRotation()});
+        window.requestAnimationFrame(() => { this.updateRotation() });
     }
 }
 
@@ -457,7 +483,7 @@ class PageBuilder {
     private static writeForm(callbackSignature: string): void {
         document.write("<form action=\"javascript:" + callbackSignature + "()\">\
             <textarea id=\"code\" name=\"vs\" rows=\"15\" cols=\"50\"></textarea>\
-              <input type=\"submit\" value=\"Update\">\
+              <input type=\"submit\" value=\"Update\" id=\"update-button\">\
             </form>");
     }
 
@@ -500,7 +526,7 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = fragmentShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "lighting");
             host.lightingPageBindShaders();
             host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
@@ -538,7 +564,7 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = vertexShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "camera");
             host.cameraPageBindShaders();
             host.setupCameraMovement();
         }
@@ -569,7 +595,7 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = verticesString;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "loading");
             host.loadingPageBindShaders();
         }
     }

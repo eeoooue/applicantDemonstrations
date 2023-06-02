@@ -1,5 +1,5 @@
 var WebGlHost = /** @class */ (function () {
-    function WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition) {
+    function WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, pageString) {
         this.cameraPosition = [0.0, 0.0, 0.0];
         this.rotation = 0;
         this.verticesString = verticesString;
@@ -7,7 +7,9 @@ var WebGlHost = /** @class */ (function () {
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
         this.cameraPosition = cameraPosition;
+        this.pageString = pageString;
         this.initialiseWebGL();
+        this.addButtonListener();
     }
     WebGlHost.prototype.initialiseWebGL = function () {
         var canvas = document.getElementById("webGLCanvas");
@@ -23,6 +25,26 @@ var WebGlHost = /** @class */ (function () {
             gl.viewport(0, 0, canvas.width, canvas.height);
             this.loadBuffers();
             this.loadShaders();
+        }
+    };
+    WebGlHost.prototype.addButtonListener = function () {
+        var _this = this;
+        var button = document.getElementById("update-button");
+        button === null || button === void 0 ? void 0 : button.addEventListener("click", function () {
+            _this.clickEvent();
+        });
+    };
+    WebGlHost.prototype.clickEvent = function () {
+        switch (this.pageString) {
+            case "loading":
+                console.log("you clicked the button on the loading page!");
+                return;
+            case "camera":
+                console.log("you clicked the button on the camera page!");
+                return;
+            case "lighting":
+                console.log("you clicked the button on the lighting page!");
+                return;
         }
     };
     WebGlHost.prototype.renderCycle = function () {
@@ -314,7 +336,7 @@ var PageBuilder = /** @class */ (function () {
     PageBuilder.writeForm = function (callbackSignature) {
         document.write("<form action=\"javascript:" + callbackSignature + "()\">\
             <textarea id=\"code\" name=\"vs\" rows=\"15\" cols=\"50\"></textarea>\
-              <input type=\"submit\" value=\"Update\">\
+              <input type=\"submit\" value=\"Update\" id=\"update-button\">\
             </form>");
     };
     PageBuilder.writeFooter = function () {
@@ -348,7 +370,7 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = fragmentShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "lighting");
             host.lightingPageBindShaders();
             host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
@@ -375,7 +397,7 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = vertexShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "camera");
             host.cameraPageBindShaders();
             host.setupCameraMovement();
         }
@@ -398,7 +420,7 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = verticesString;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "loading");
             host.loadingPageBindShaders();
         }
     };
