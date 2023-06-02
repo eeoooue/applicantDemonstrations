@@ -12259,8 +12259,9 @@ var PageLoader = /** @class */ (function () {
             ' gl_FragColor = v_colour;' +
             '}';
         var codeSection = document.getElementById("code");
+        var startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = "placeholder";
+            codeSection.value = startingCode;
             var host = new WebGlHost(vertices, indices, vertexShaderCode, fragmentShaderCode, "loading");
             host.loadingPageBindShaders();
         }

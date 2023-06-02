@@ -12445,7 +12445,7 @@ class PageLoader {
             '}';
 
         const codeSection: HTMLElement | null = document.getElementById("code");
-        const startingCode: string = "";
+        const startingCode: string = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
 
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
