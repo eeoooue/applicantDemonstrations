@@ -54,17 +54,26 @@ var WebGlHost = /** @class */ (function () {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
     };
+    WebGlHost.prototype.toNumArray = function (strings) {
+        var ans = new Array();
+        strings.forEach(function (s) {
+            ans.push(+s);
+        });
+        return ans;
+    };
     WebGlHost.prototype.loadBuffers = function () {
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
-        var vertices = this.verticesString.split(',');
+        var splitVertices = this.verticesString.split(',');
+        var vertices = this.toNumArray(splitVertices);
         var vertex_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
-        this.indices = this.indicesString.split(',');
+        var splitIndices = this.indicesString.split(',');
+        this.indices = this.toNumArray(splitIndices);
         var Index_Buffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);

@@ -2,15 +2,13 @@
 class WebGlHost {
 
     public gl: WebGLRenderingContext | null;
-    public verticesString;
-    public indicesString;
-    public indices;
-
+    public verticesString: string;
+    public indicesString: string;
+    public indices: number[];
     public vertexShaderCode: string;
     public fragmentShaderCode: string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
     public rotation = 0;
-
     public shaderProgram: WebGLProgram | null;
 
     public pageString: string;
@@ -87,6 +85,17 @@ class WebGlHost {
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
     }
 
+    toNumArray(strings: string[]): number[] {
+
+        var ans: number[] = new Array<number>();
+
+        strings.forEach(function (s) {
+            ans.push(+s);
+        })
+
+        return ans;
+    }
+
     loadBuffers(): void {
 
         if (!this.gl) {
@@ -95,13 +104,18 @@ class WebGlHost {
 
         var gl: WebGLRenderingContext = this.gl;
 
-        var vertices = this.verticesString.split(',');
+        var splitVertices = this.verticesString.split(',');
+        var vertices = this.toNumArray(splitVertices);
+
+
         var vertex_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-        this.indices = this.indicesString.split(',');
+        var splitIndices = this.indicesString.split(',');
+        this.indices = this.toNumArray(splitIndices);
+
         var Index_Buffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
