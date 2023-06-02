@@ -15,7 +15,7 @@ class WebGlHost {
 
     public pageString: string;
 
-    constructor(verticesString : string, indicesString : string, vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
+    constructor(verticesString: string, indicesString: string, vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
 
         this.verticesString = verticesString;
         this.indicesString = indicesString;
@@ -462,8 +462,12 @@ class PageBuilder {
 
     public static writeHeaderAndCanvas(page: string): void {
 
-        document.write(this.getHeader(page));
-        document.write("<canvas width = \"500\" height = \"500\" id = \"webGLCanvas\"></canvas>");
+        const headerString = this.getHeader(page);
+        document.write(headerString);
+
+        const canvasString = '<canvas width="500" height="500" id="webGLCanvas"></canvas>';
+        document.write(canvasString);
+
         this.writeForm();
     }
 

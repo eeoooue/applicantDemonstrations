@@ -320,8 +320,10 @@ var PageBuilder = /** @class */ (function () {
         return header;
     };
     PageBuilder.writeHeaderAndCanvas = function (page) {
-        document.write(this.getHeader(page));
-        document.write("<canvas width = \"500\" height = \"500\" id = \"webGLCanvas\"></canvas>");
+        var headerString = this.getHeader(page);
+        document.write(headerString);
+        var canvasString = '<canvas width="500" height="500" id="webGLCanvas"></canvas>';
+        document.write(canvasString);
         this.writeForm();
     };
     PageBuilder.writePlainHeader = function (page) {
