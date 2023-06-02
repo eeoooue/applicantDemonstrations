@@ -1,12 +1,11 @@
 var WebGlHost = /** @class */ (function () {
-    function WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, pageString) {
+    function WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, pageString) {
         this.cameraPosition = [0.0, 0.0, 0.0];
         this.rotation = 0;
         this.verticesString = verticesString;
         this.indicesString = indicesString;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.cameraPosition = cameraPosition;
         this.pageString = pageString;
         this.initialiseWebGL();
         this.addButtonListener();
@@ -243,12 +242,8 @@ var WebGlHost = /** @class */ (function () {
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
-        // nothing was here before as it was calling plainly BindShaders() which doesnt exist
-        // cameraPageBindShaders();
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]
-        //, this.cameraPosition[3]
-        );
+        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
         this.renderCycle();
     };
     WebGlHost.prototype.cameraPageBindShaders = function () {
@@ -352,7 +347,6 @@ var PageLoader = /** @class */ (function () {
     PageLoader.initialiseLightingTutorial = function (bunnyVerticesString, bunnyIndicesString) {
         var verticesString = bunnyVerticesString;
         var indicesString = bunnyIndicesString;
-        var cameraPosition = [0.0, 0.0, 0.0];
         var vertexShaderCode = 'attribute vec3 a_position;\r\n' +
             'attribute vec3 a_normal;\r\n\r\n' +
             'uniform float u_rotation;\r\n\r\n' +
@@ -372,7 +366,7 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = fragmentShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "lighting");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "lighting");
             host.lightingPageBindShaders();
             host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
@@ -381,7 +375,6 @@ var PageLoader = /** @class */ (function () {
     PageLoader.initialiseCameraTutorial = function (sphereVerticesString, sphereIndicesString) {
         var verticesString = sphereVerticesString;
         var indicesString = sphereIndicesString;
-        var cameraPosition = [0.0, 0.0, 0.0];
         // temporary assignment below for personal testing
         var vertexShaderCode = 'attribute vec3 a_position;\r\n' +
             'attribute vec3 a_normal;\r\n\r\n' +
@@ -399,14 +392,12 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = vertexShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "camera");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "camera");
             host.cameraPageBindShaders();
             host.setupCameraMovement();
         }
     };
     PageLoader.initialiseVBOTutorial = function (verticesString, indicesString) {
-        // camera pos doesnt change for this example
-        var cameraPosition = [0.0, 0.0, 0.0];
         var vertexShaderCode = 'attribute vec3 a_position;' +
             'attribute vec3 a_colour;' +
             'varying vec4 v_colour;' +
@@ -422,7 +413,7 @@ var PageLoader = /** @class */ (function () {
         var codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = verticesString;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "loading");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "loading");
             host.loadingPageBindShaders();
         }
     };

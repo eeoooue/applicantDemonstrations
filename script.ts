@@ -15,13 +15,12 @@ class WebGlHost {
 
     public pageString: string;
 
-    constructor(verticesString, indicesString, vertexShaderCode: string, fragmentShaderCode: string, cameraPosition: number[], pageString: string) {
+    constructor(verticesString : string, indicesString : string, vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
 
         this.verticesString = verticesString;
         this.indicesString = indicesString;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.cameraPosition = cameraPosition;
         this.pageString = pageString;
         this.initialiseWebGL();
         this.addButtonListener();
@@ -361,15 +360,11 @@ class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
 
-        // nothing was here before as it was calling plainly BindShaders() which doesnt exist
-        // cameraPageBindShaders();
-
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation,
             this.cameraPosition[0],
             this.cameraPosition[1],
             this.cameraPosition[2]
-            //, this.cameraPosition[3]
         );
 
         this.renderCycle();
@@ -466,6 +461,7 @@ class PageBuilder {
 
 
     public static writeHeaderAndCanvas(page: string): void {
+
         document.write(this.getHeader(page));
         document.write("<canvas width = \"500\" height = \"500\" id = \"webGLCanvas\"></canvas>");
         this.writeForm();
@@ -502,7 +498,7 @@ class PageLoader {
 
         const verticesString = bunnyVerticesString;
         const indicesString = bunnyIndicesString;
-        var cameraPosition: number[] = [0.0, 0.0, 0.0];
+
         var vertexShaderCode: string =
             'attribute vec3 a_position;\r\n' +
             'attribute vec3 a_normal;\r\n\r\n' +
@@ -528,7 +524,7 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = fragmentShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "lighting");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "lighting");
             host.lightingPageBindShaders();
             host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
@@ -539,8 +535,6 @@ class PageLoader {
 
         const verticesString = sphereVerticesString;
         const indicesString = sphereIndicesString;
-
-        var cameraPosition = [0.0, 0.0, 0.0];
 
         // temporary assignment below for personal testing
         var vertexShaderCode =
@@ -566,16 +560,13 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = vertexShaderCode;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "camera");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "camera");
             host.cameraPageBindShaders();
             host.setupCameraMovement();
         }
     }
 
     public static initialiseVBOTutorial(verticesString: string, indicesString: string) {
-
-        // camera pos doesnt change for this example
-        var cameraPosition = [0.0, 0.0, 0.0];
 
         var vertexShaderCode =
             'attribute vec3 a_position;' +
@@ -598,7 +589,7 @@ class PageLoader {
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
 
             codeSection.value = verticesString;
-            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition, "loading");
+            var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, "loading");
             host.loadingPageBindShaders();
         }
     }
