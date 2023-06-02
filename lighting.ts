@@ -227,7 +227,7 @@ class WebGlHost {
             this.cameraPosition[2]);
     }
 
-    updateCameraPositionOnKeyUp(event: KeyboardEvent) {
+    public updateCameraPositionOnKeyUp(event: KeyboardEvent) {
 
         if (this.moveCamera(event.key)) {
             this.updateSimpleCameraPosition();
@@ -235,7 +235,7 @@ class WebGlHost {
         this.renderCycle();
     }
 
-    moveCamera(key: string): boolean {
+    public moveCamera(key: string): boolean {
 
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
@@ -404,6 +404,13 @@ class WebGlHost {
         this.loadBuffers();
         this.loadingPageBindShaders();
     }
+
+    setupCameraMovement() {
+
+        document.addEventListener('keyup', (event) => {
+            this.updateCameraPositionOnKeyUp(event);
+        }, false);
+    }
 }
 
 
@@ -481,8 +488,7 @@ function initialiseCameraTutorial(sphereVerticesString: string, sphereIndicesStr
         codeSection.value = vertexShaderCode;
         var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
         host.cameraPageBindShaders();
-
-        document.addEventListener('keyup', host.updateCameraPositionOnKeyUp, false);
+        host.setupCameraMovement();
     }
 
 }

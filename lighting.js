@@ -265,6 +265,12 @@ var WebGlHost = /** @class */ (function () {
         this.loadBuffers();
         this.loadingPageBindShaders();
     };
+    WebGlHost.prototype.setupCameraMovement = function () {
+        var _this = this;
+        document.addEventListener('keyup', function (event) {
+            _this.updateCameraPositionOnKeyUp(event);
+        }, false);
+    };
     return WebGlHost;
 }());
 function initialiseLightingTutorial(bunnyVerticesString, bunnyIndicesString) {
@@ -318,7 +324,7 @@ function initialiseCameraTutorial(sphereVerticesString, sphereIndicesString) {
         codeSection.value = vertexShaderCode;
         var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
         host.cameraPageBindShaders();
-        document.addEventListener('keyup', host.updateCameraPositionOnKeyUp, false);
+        host.setupCameraMovement();
     }
 }
 function initialiseVBOTutorial(verticesString, indicesString) {
