@@ -255,6 +255,16 @@ var WebGlHost = /** @class */ (function () {
         this.bind_a_normal();
         this.renderCycle();
     };
+    WebGlHost.prototype.loadingPageBindShaders = function () {
+        this.bind_a_position();
+        this.bind_a_colour();
+        this.renderCycle();
+    };
+    WebGlHost.prototype.reloadBuffers = function () {
+        this.verticesString = this.getCodeSnippet();
+        this.loadBuffers();
+        this.loadingPageBindShaders();
+    };
     return WebGlHost;
 }());
 function initialiseLightingTutorial(bunnyVerticesString, bunnyIndicesString) {
@@ -289,24 +299,15 @@ function initialiseCameraTutorial(sphereVerticesString, sphereIndicesString) {
     var verticesString = sphereVerticesString;
     var indicesString = sphereIndicesString;
     var cameraPosition = [0.0, 0.0, 0.0];
+    // temporary assignment below for personal testing
     var vertexShaderCode = 'attribute vec3 a_position;\r\n' +
         'attribute vec3 a_normal;\r\n\r\n' +
         'uniform vec3 u_cameraPosition;\r\n\r\n' +
         'varying vec4 v_colour;\r\n\r\n' +
         'void main(void) {\r\n' +
-        ' gl_Position = vec4(a_position, 1.0);\r\n' +
+        ' gl_Position = vec4(a_position - u_cameraPosition, 1.0);\r\n' +
         ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
         '}';
-    // temporary assignment below for personal testing
-    vertexShaderCode =
-        'attribute vec3 a_position;\r\n' +
-            'attribute vec3 a_normal;\r\n\r\n' +
-            'uniform vec3 u_cameraPosition;\r\n\r\n' +
-            'varying vec4 v_colour;\r\n\r\n' +
-            'void main(void) {\r\n' +
-            ' gl_Position = vec4(a_position - u_cameraPosition, 1.0);\r\n' +
-            ' v_colour = vec4(a_normal * 0.5 + 0.5, 1.0);\r\n' +
-            '}';
     var fragmentShaderCode = 'precision mediump float;' +
         'varying vec4 v_colour;' +
         'void main(void) {' +
@@ -318,5 +319,27 @@ function initialiseCameraTutorial(sphereVerticesString, sphereIndicesString) {
         var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
         host.cameraPageBindShaders();
         document.addEventListener('keyup', host.updateCameraPositionOnKeyUp, false);
+    }
+}
+function initialiseVBOTutorial(verticesString, indicesString) {
+    // camera pos doesnt change for this example
+    var cameraPosition = [0.0, 0.0, 0.0];
+    var vertexShaderCode = 'attribute vec3 a_position;' +
+        'attribute vec3 a_colour;' +
+        'varying vec4 v_colour;' +
+        'void main(void) {' +
+        ' gl_Position = vec4(a_position, 1.0);' +
+        ' v_colour = vec4(a_colour, 1.0);' +
+        '}';
+    var fragmentShaderCode = 'precision mediump float;' +
+        'varying vec4 v_colour;' +
+        'void main(void) {' +
+        ' gl_FragColor = v_colour;' +
+        '}';
+    var codeSection = document.getElementById("code");
+    if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+        codeSection.value = verticesString;
+        var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
+        host.loadingPageBindShaders();
     }
 }
