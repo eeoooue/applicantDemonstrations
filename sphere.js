@@ -484,3 +484,8 @@ sphereIndicesString = "\
 161,135,38,\
 135,36,38,\
 ";
+
+
+function loadCameraPage(){
+    PageLoader.initialiseCameraTutorial(sphereVerticesString, sphereIndicesString);
+}

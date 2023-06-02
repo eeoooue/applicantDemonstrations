@@ -41766,3 +41766,8 @@ bunnyIndicesString = "\
 8081,8745,3957,\
 8745,8081,8740,\
 ";
+
+
+function LoadBunnyPage(){
+    PageLoader.initialiseLightingTutorial(bunnyVerticesString, bunnyIndicesString);
+}

@@ -2,12 +2,13 @@
 
 <head>
 	<link rel="stylesheet" href="style.css" />
-	<script src="scripts.js"></script>
 	<script src="loading.js"></script>
+	<script src="script.js"></script>
 </head>
 
-<body onload="initialiseVBOTutorial()">
-	<script>writeHeader("reloadBuffers", "loading.html");</script>
+<body onload="LoadLoadingPage()">
+
+	<script>PageBuilder.writeHeaderAndCanvas("loading.html");</script>
 	<h1>Loading Vertex Buffers onto the Graphics Card</h1>
 	<p>This textbox contains a bunch of numbers. The programmer has
 		to let the graphics card know what these numbers mean. This program
@@ -26,7 +27,7 @@
 	</div>
 	<h2>Simplified Graphics Pipeline</h2>
 	<img src="assets/Pipeline.png" />
-	<script>writeFooter();</script>
+	<script>PageBuilder.writeFooter();</script>
 </body>
 
 </html>
