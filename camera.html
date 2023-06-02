@@ -4,11 +4,11 @@
   <link rel="stylesheet" href="style.css" />
   <script src="sphere.js"></script>
   <script src="lighting.js"></script>
-  <script src="scripts.js"></script>
+  <script src="pagebuilder.js"></script>
 </head>
 
 <body onload="loadCameraPage()">
-  <script>writeHeader("reloadVertexShader", "camera.html");</script>
+  <script>PageBuilder.writeHeader("reloadVertexShader", "camera.html");</script>
   <h2>Moving Vertices in the Vertex Shader</h2>
   <p>Once we've loaded data onto the card and made a draw call to send that
     data down the pipeline the vertex data arrives at the vertex shader. The vertex shader
@@ -31,7 +31,7 @@
   </div>
   <h2>Simplified Graphics Pipeline</h2>
   <img src="assets/Pipeline.png" />
-  <script>writeFooter();</script>
+  <script>PageBuilder.writeFooter();</script>
 </body>
 
 </html>
