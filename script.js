@@ -78,21 +78,6 @@ var WebGlHost = /** @class */ (function () {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     };
-    WebGlHost.prototype.updateRotation = function () {
-        if (this.gl) {
-            var gl = this.gl;
-            if (this.shaderProgram) {
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = this.rotation + 0.01;
-                if (this.rotation > 6.28) {
-                    this.rotation = this.rotation - 6.28;
-                }
-            }
-        }
-        this.renderCycle();
-        this.updateRotation();
-    };
     WebGlHost.prototype.bind_a_position = function () {
         if (!this.gl) {
             return;
@@ -271,6 +256,26 @@ var WebGlHost = /** @class */ (function () {
             _this.updateCameraPositionOnKeyUp(event);
         }, false);
     };
+    WebGlHost.prototype.startRotationLoop = function () {
+        var _this = this;
+        window.requestAnimationFrame(function () { _this.updateRotation(); });
+    };
+    WebGlHost.prototype.updateRotation = function () {
+        var _this = this;
+        if (this.gl) {
+            var gl = this.gl;
+            if (this.shaderProgram) {
+                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+                gl.uniform1f(uRotationLocation, this.rotation);
+                this.rotation = this.rotation + 0.01;
+                if (this.rotation > 6.28) {
+                    this.rotation = this.rotation - 6.28;
+                }
+            }
+        }
+        this.renderCycle();
+        window.requestAnimationFrame(function () { _this.updateRotation(); });
+    };
     return WebGlHost;
 }());
 var PageBuilder = /** @class */ (function () {
@@ -345,6 +350,7 @@ var PageLoader = /** @class */ (function () {
             codeSection.value = fragmentShaderCode;
             var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
             host.lightingPageBindShaders();
+            host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
         }
     };

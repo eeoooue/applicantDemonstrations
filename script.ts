@@ -4,14 +4,16 @@ class WebGlHost {
     public gl: WebGLRenderingContext | null;
     public verticesString;
     public indicesString;
-    public vertexShaderCode;
-    public fragmentShaderCode;
+    public indices;
+
+    public vertexShaderCode : string;
+    public fragmentShaderCode : string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
     public rotation = 0;
-    public indices;
+
     public shaderProgram: WebGLProgram | null;
 
-    constructor(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition) {
+    constructor(verticesString, indicesString, vertexShaderCode : string, fragmentShaderCode : string, cameraPosition: number[]) {
 
         this.verticesString = verticesString;
         this.indicesString = indicesString;
@@ -124,27 +126,7 @@ class WebGlHost {
     }
 
 
-    public updateRotation() {
-
-        if (this.gl) {
-
-            var gl: WebGLRenderingContext = this.gl;
-
-            if (this.shaderProgram) {
-
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = this.rotation + 0.01;
-                if (this.rotation > 6.28) {
-                    this.rotation = this.rotation - 6.28;
-                }
-            }
-        }
-
-        this.renderCycle();
-
-        this.updateRotation();
-    }
+    
 
 
 
@@ -405,9 +387,34 @@ class WebGlHost {
             this.updateCameraPositionOnKeyUp(event);
         }, false);
     }
+
+    public startRotationLoop(){
+
+        window.requestAnimationFrame(() => {this.updateRotation()});
+    }
+
+    public updateRotation() {
+
+        if (this.gl) {
+
+            var gl: WebGLRenderingContext = this.gl;
+
+            if (this.shaderProgram) {
+
+                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+                gl.uniform1f(uRotationLocation, this.rotation);
+                this.rotation = this.rotation + 0.01;
+                if (this.rotation > 6.28) {
+                    this.rotation = this.rotation - 6.28;
+                }
+            }
+        }
+
+        this.renderCycle();
+
+        window.requestAnimationFrame(() => {this.updateRotation()});
+    }
 }
-
-
 
 
 class PageBuilder {
@@ -495,6 +502,7 @@ class PageLoader {
             codeSection.value = fragmentShaderCode;
             var host = new WebGlHost(verticesString, indicesString, vertexShaderCode, fragmentShaderCode, cameraPosition);
             host.lightingPageBindShaders();
+            host.startRotationLoop();
             // window.requestAnimationFrame(host.updateRotation);
         }
     }
