@@ -38,12 +38,15 @@ var WebGlHost = /** @class */ (function () {
         switch (this.pageString) {
             case "loading":
                 console.log("you clicked the button on the loading page!");
+                this.reloadBuffers();
                 return;
             case "camera":
                 console.log("you clicked the button on the camera page!");
+                this.reloadVertexShader();
                 return;
             case "lighting":
                 console.log("you clicked the button on the lighting page!");
+                this.reloadPixelShader();
                 return;
         }
     };
