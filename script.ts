@@ -62,19 +62,15 @@ class WebGlHost {
     public clickEvent(): void {
 
         switch (this.pageString) {
-
             case "loading":
-                console.log("you clicked the button on the loading page!")
                 this.reloadBuffers();
                 return;
 
             case "camera":
-                console.log("you clicked the button on the camera page!")
                 this.reloadVertexShader();
                 return;
 
             case "lighting":
-                console.log("you clicked the button on the lighting page!")
                 this.reloadPixelShader();
                 return;
         }
@@ -125,8 +121,6 @@ class WebGlHost {
         }
 
         var gl: WebGLRenderingContext = this.gl;
-
-
 
         var vertShader: WebGLShader | null = gl.createShader(gl.VERTEX_SHADER);
 
@@ -345,7 +339,6 @@ class WebGlHost {
         gl.shaderSource(vertShader, vertexShaderCode);
         gl.compileShader(vertShader);
 
-        // I commented this out because fragmentShaderCode never changes (?)
         var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
 
         if (!fragShader) {
@@ -472,26 +465,32 @@ class PageBuilder {
     }
 
 
-    public static writeHeader(callbackSignature: string, page: string): void {
+    public static writeHeaderAndCanvas(page: string): void {
         document.write(this.getHeader(page));
         document.write("<canvas width = \"500\" height = \"500\" id = \"webGLCanvas\"></canvas>");
-        this.writeForm(callbackSignature);
+        this.writeForm();
     }
 
-    public static writeHeader2(page: string): void {
+    public static writePlainHeader(page: string): void {
 
         document.write(this.getHeader(page));
     }
 
-    private static writeForm(callbackSignature: string): void {
-        document.write("<form action=\"javascript:" + callbackSignature + "()\">\
-            <textarea id=\"code\" name=\"vs\" rows=\"15\" cols=\"50\"></textarea>\
-              <input type=\"submit\" value=\"Update\" id=\"update-button\">\
-            </form>");
+    private static writeForm(): void {
+
+        var formText = '\
+        <form action="javascript: donothing()">\
+            <textarea id="code" name="vs" rows="15" cols="50"></textarea>\
+                <input type="submit" value="Update" id="update-button">\
+        </form>';
+
+        document.write(formText);
     }
 
     public static writeFooter(): void {
-        document.write("</div><div id=\"footer\"><p><b>Simon Grey</b> - <i>S.Grey@hull.ac.uk</i></p></div></div>");
+
+        var footerDiv = '</div><div id="footer"><p><b>Simon Grey</b> - <i>S.Grey@hull.ac.uk</i></p></div></div>';
+        document.write(footerDiv);
     }
 }
 
@@ -574,6 +573,7 @@ class PageLoader {
     }
 
     public static initialiseVBOTutorial(verticesString: string, indicesString: string) {
+
         // camera pos doesnt change for this example
         var cameraPosition = [0.0, 0.0, 0.0];
 
