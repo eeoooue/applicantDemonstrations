@@ -64,10 +64,6 @@ export class WebGlHost {
 
     public renderCycle(): void {
 
-        if (!this.gl) {
-            return;
-        }
-
         var gl: WebGLRenderingContext = this.gl;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -85,10 +81,6 @@ export class WebGlHost {
     }
 
     loadBuffers(): void {
-
-        if (!this.gl) {
-            return;
-        }
 
         var gl: WebGLRenderingContext = this.gl;
 
@@ -112,7 +104,7 @@ export class WebGlHost {
 
     setupShaderProgram(vertShader: WebGLShader, fragShader: WebGLShader) {
 
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
 
@@ -129,10 +121,6 @@ export class WebGlHost {
 
         // this is always called by any webgl demo
 
-        if (!this.gl) {
-            return;
-        }
-
         var gl: WebGLRenderingContext = this.gl;
         const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
         const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
@@ -146,10 +134,6 @@ export class WebGlHost {
     }
 
     compileShader(type: number, shaderCode: string): WebGLShader | undefined {
-
-        if (!this.gl) {
-            return;
-        }
 
         var gl: WebGLRenderingContext = this.gl;
         const shader: WebGLShader | null = gl.createShader(type);
@@ -192,7 +176,7 @@ export class WebGlHost {
 
     updateSimpleCameraPosition() {
 
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
 
@@ -203,7 +187,7 @@ export class WebGlHost {
 
     public updateRotation() {
 
-        if (this.gl && this.shaderProgram) {
+        if (this.shaderProgram) {
 
             var gl: WebGLRenderingContext = this.gl;
             var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
@@ -217,7 +201,7 @@ export class WebGlHost {
 
     bindAttribute(attributeName: string, offset: number) {
 
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
 
