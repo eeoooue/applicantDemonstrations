@@ -104,41 +104,21 @@ export class WebGlHost {
         gl.useProgram(this.shaderProgram);
     }
     bind_a_position() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_position");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
-        gl.enableVertexAttribArray(coord);
-        this.renderCycle();
+        this.bindAttribute("a_position", 0);
     }
     bind_a_normal() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_normal");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
-        gl.enableVertexAttribArray(coord);
-        this.renderCycle();
+        this.bindAttribute("a_normal", 3 * 4);
     }
     bind_a_colour() {
-        if (!this.gl) {
+        this.bindAttribute("a_colour", 3 * 4);
+    }
+    bindAttribute(attributeName, offset) {
+        if (!this.gl || !this.shaderProgram) {
             return;
         }
         var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_colour");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
         gl.enableVertexAttribArray(coord);
     }
     updateSimpleCameraPosition() {
@@ -213,6 +193,11 @@ export class WebGlHost {
         this.lightingPageBindShaders();
         this.renderCycle();
     }
+    lightingPageBindShaders() {
+        this.bind_a_position();
+        this.bind_a_normal();
+        this.renderCycle();
+    }
     getCodeSnippet() {
         const codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
@@ -251,11 +236,6 @@ export class WebGlHost {
         this.renderCycle();
     }
     cameraPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
-        this.renderCycle();
-    }
-    lightingPageBindShaders() {
         this.bind_a_position();
         this.bind_a_normal();
         this.renderCycle();
