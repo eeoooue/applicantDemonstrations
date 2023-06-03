@@ -14,16 +14,15 @@ export class WebGlHost {
         const canvas = document.getElementById("webGLCanvas");
         if (canvas instanceof HTMLCanvasElement) {
             this.gl = canvas.getContext("webgl");
-            if (!this.gl) {
-                return;
+            if (this.gl) {
+                var gl = this.gl;
+                gl.clearColor(0.2, 0.2, 0.2, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                this.loadBuffers();
+                this.loadShaders();
             }
-            var gl = this.gl;
-            gl.clearColor(0.2, 0.2, 0.2, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            this.loadBuffers();
-            this.loadShaders();
         }
     }
     addButtonListener() {
@@ -77,81 +76,92 @@ export class WebGlHost {
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
-    loadShaders() {
-        if (!this.gl) {
+    //#region shaderProgram
+    setupShaderProgram(vertShader, fragShader) {
+        if (!this.gl || !this.shaderProgram) {
             return;
         }
         var gl = this.gl;
-        var vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return;
-        }
-        gl.shaderSource(vertShader, this.vertexShaderCode);
-        gl.compileShader(vertShader);
-        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return;
-        }
-        gl.shaderSource(fragShader, this.fragmentShaderCode);
-        gl.compileShader(fragShader);
-        this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
-            return;
-        }
         gl.attachShader(this.shaderProgram, vertShader);
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-    bind_a_position() {
+    loadShaders() {
+        // this is always called by any webgl demo
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
-        if (!this.shaderProgram) {
+        const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
+        const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
+        this.shaderProgram = gl.createProgram();
+        if (!vertShader || !fragShader) {
             return;
         }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_position");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
-        gl.enableVertexAttribArray(coord);
+        this.setupShaderProgram(vertShader, fragShader);
+    }
+    compileShader(type, shaderCode) {
+        if (!this.gl) {
+            return;
+        }
+        var gl = this.gl;
+        const shader = gl.createShader(type);
+        if (shader) {
+            gl.shaderSource(shader, shaderCode);
+            gl.compileShader(shader);
+            return shader;
+        }
+    }
+    reloadBuffers() {
+        // specific to loading page
+        var textAreaContent = this.getCodeSnippet();
+        this.vertices = this.toNumArray(textAreaContent.split(","));
+        this.loadBuffers();
+        this.loadingPageBindShaders();
+    }
+    reloadPixelShader() {
+        // specific to lighting page 
+        this.fragmentShaderCode = this.getCodeSnippet();
+        this.loadShaders();
+        this.bindPositionAndNormal();
         this.renderCycle();
     }
-    bind_a_normal() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_normal");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
-        gl.enableVertexAttribArray(coord);
+    reloadVertexShader() {
+        // specific to camera page
+        this.vertexShaderCode = this.getCodeSnippet();
+        this.loadShaders();
+        this.updateSimpleCameraPosition();
         this.renderCycle();
-    }
-    bind_a_colour() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var coord = gl.getAttribLocation(this.shaderProgram, "a_colour");
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
-        gl.enableVertexAttribArray(coord);
     }
     updateSimpleCameraPosition() {
-        if (!this.gl) {
+        if (!this.gl || !this.shaderProgram) {
             return;
         }
         var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
     }
+    updateRotation() {
+        if (this.gl && this.shaderProgram) {
+            var gl = this.gl;
+            var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+            gl.uniform1f(uRotationLocation, this.rotation);
+            this.rotation = (this.rotation + 0.01) % 6.28;
+        }
+        this.renderCycle();
+        window.requestAnimationFrame(() => { this.updateRotation(); });
+    }
+    bindAttribute(attributeName, offset) {
+        if (!this.gl || !this.shaderProgram) {
+            return;
+        }
+        var gl = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
+    }
+    //#endregion
     updateCameraPositionOnKeyUp(event) {
         if (this.moveCamera(event.key)) {
             this.updateSimpleCameraPosition();
@@ -161,57 +171,20 @@ export class WebGlHost {
     moveCamera(key) {
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-            return true;
         }
         else if (key == 'a') {
             this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-            return true;
         }
         else if (key == 'w') {
             this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-            return true;
         }
         else if (key == 's') {
             this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-            return true;
         }
-        return false;
-    }
-    reloadPixelShader() {
-        if (!this.gl) {
-            return;
+        else {
+            return false;
         }
-        var gl = this.gl;
-        var vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return;
-        }
-        gl.shaderSource(vertShader, this.vertexShaderCode);
-        gl.compileShader(vertShader);
-        const codeElement = document.getElementById("code");
-        if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)) {
-            return;
-        }
-        var fragmentShaderCode = codeElement.value;
-        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return;
-        }
-        gl.shaderSource(fragShader, fragmentShaderCode);
-        gl.compileShader(fragShader);
-        if (!fragShader) {
-            return;
-        }
-        this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
-            return;
-        }
-        gl.attachShader(this.shaderProgram, vertShader);
-        gl.attachShader(this.shaderProgram, fragShader);
-        gl.linkProgram(this.shaderProgram);
-        gl.useProgram(this.shaderProgram);
-        this.lightingPageBindShaders();
-        this.renderCycle();
+        return true;
     }
     getCodeSnippet() {
         const codeSection = document.getElementById("code");
@@ -220,56 +193,15 @@ export class WebGlHost {
         }
         return "";
     }
-    reloadVertexShader() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        var vertexShaderCode = this.getCodeSnippet();
-        const vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return;
-        }
-        gl.shaderSource(vertShader, vertexShaderCode);
-        gl.compileShader(vertShader);
-        const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return;
-        }
-        gl.shaderSource(fragShader, this.fragmentShaderCode);
-        gl.compileShader(fragShader);
-        this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
-            return;
-        }
-        gl.attachShader(this.shaderProgram, vertShader);
-        gl.attachShader(this.shaderProgram, fragShader);
-        gl.linkProgram(this.shaderProgram);
-        gl.useProgram(this.shaderProgram);
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
-        this.renderCycle();
-    }
-    cameraPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
-        this.renderCycle();
-    }
-    lightingPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
-        this.renderCycle();
-    }
     loadingPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_colour();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_colour", 3 * 4);
         this.renderCycle();
     }
-    reloadBuffers() {
-        var textAreaContent = this.getCodeSnippet();
-        this.vertices = this.toNumArray(textAreaContent.split(","));
-        this.loadBuffers();
-        this.loadingPageBindShaders();
+    bindPositionAndNormal() {
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_normal", 3 * 4);
+        this.renderCycle();
     }
     setupCameraMovement() {
         document.addEventListener('keyup', (event) => {
@@ -277,18 +209,6 @@ export class WebGlHost {
         }, false);
     }
     startRotationLoop() {
-        window.requestAnimationFrame(() => { this.updateRotation(); });
-    }
-    updateRotation() {
-        if (this.gl) {
-            var gl = this.gl;
-            if (this.shaderProgram) {
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = (this.rotation + 0.01) % 6.28;
-            }
-        }
-        this.renderCycle();
         window.requestAnimationFrame(() => { this.updateRotation(); });
     }
 }

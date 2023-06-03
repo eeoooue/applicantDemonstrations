@@ -28,7 +28,7 @@ export class CameraDemo {
     }
     initializeDemo() {
         var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "camera");
-        host.cameraPageBindShaders();
+        host.bindPositionAndNormal();
         host.setupCameraMovement();
     }
 }
