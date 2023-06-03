@@ -1,0 +1,59 @@
+<html>
+
+<head>
+	<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+	<div id="wrapper">
+		<div id="nav">
+			<ul>
+				<li> <a href="lighting.html">Lighting</a> </li>
+				<li> <a href="camera.html">Camera Control</a> </li>
+				<li> <a href="loading.html">Loading Data</a> </li>
+				<li class="selected"> <a href="pipeline.html">Graphics Pipeline</a> </li>
+				<li> <a href="index.html">Setting the Scene</a> </li>
+			</ul>
+		</div>
+
+		<div id="content">
+
+			<h1>The Graphics Pipeline</h1>
+			<p>In graphics there are very many independent calculations going on to create a scene.</p>
+			<p>Often, the computer is doing the same calculations with different bits of data. For example, all the
+				points (or
+				vertices) that
+				make up a model could be moved to the right place in a 3D scene, or all the pixels that make up a
+				triangle could
+				be coloured using the same lighting model.</p>
+			<p>It doesn't matter which calculations are done first. They could be done in any order, or they could be
+				done
+				<b><i>all at the same time</i></b>
+			</p>
+			<p>This is how your graphics hardware works. It can perform the same calculations on thousands of different
+				pieces
+				of data at the same time.</p>
+			<p>Originally the <b><i>Massively Parallelised</i></b> architecture was limited and used a <b><i>fixed
+						function
+						pipeline</i></b>, but now we have much more
+				control over how the pipeline is created, and the code that is run on the graphics hardware. So much so
+				that we
+				can now
+				exploit this hardware for all sorts of non-graphics related tasks.</p>
+			<p>Today we're going to look at three parts of the process. They are:</p>
+			<p>1. Loading data into graphics buffers.</p>
+			<p>2. Moving vertices around in 3D space.</p>
+			<p>3. Calculating what colour individual pixels should be.</p>
+			<h2>Simplified Graphics Pipeline</h2>
+			<img src="assets/Pipeline.png" />
+		</div>
+
+		<div id="footer">
+			<p><b>Simon Grey</b> - <i>S.Grey@hull.ac.uk</i></p>
+		</div>
+	</div>
+
+</body>
+
+</html>
