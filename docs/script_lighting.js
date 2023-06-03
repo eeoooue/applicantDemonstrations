@@ -20,7 +20,7 @@ export class LightingDemo {
             '}';
         this.model = new StanfordBunny();
         this.startingCode = this.fragmentShaderCode;
-        this.initializeDemo();
+        this.initializeDemo(this.model);
         this.populateTextArea();
     }
     populateTextArea() {
@@ -29,10 +29,20 @@ export class LightingDemo {
             codeSection.value = this.startingCode;
         }
     }
-    initializeDemo() {
-        this.host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
-        this.host.bindPositionAndNormal();
-        this.host.startRotationLoop();
+    initializeDemo(model) {
+        const canvas = document.getElementById("webGLCanvas");
+        if (canvas instanceof HTMLCanvasElement) {
+            const gl = canvas.getContext("webgl");
+            if (gl instanceof WebGLRenderingContext) {
+                gl.clearColor(0.2, 0.2, 0.2, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                this.host = new WebGlHost(gl, model.vertices, model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
+                this.host.bindPositionAndNormal();
+                this.host.startRotationLoop();
+            }
+        }
     }
 }
 new LightingDemo();

@@ -2,7 +2,7 @@
 
 export class WebGlHost {
 
-    public gl: WebGLRenderingContext | undefined | null;
+    public gl: WebGLRenderingContext;
 
     public vertices: number[];
     public indices: number[];
@@ -15,7 +15,9 @@ export class WebGlHost {
 
     public pageString: string;
 
-    constructor(vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
+    constructor(glInstance: WebGLRenderingContext, vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
+
+        this.gl = glInstance;
 
         this.vertices = vertices;
         this.indices = indices;
@@ -30,23 +32,8 @@ export class WebGlHost {
 
     private initialiseWebGL(): void {
 
-        const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
-
-        if (canvas instanceof HTMLCanvasElement) {
-
-            this.gl = canvas.getContext("webgl");
-
-            if (this.gl) {
-                var gl: WebGLRenderingContext = this.gl;
-
-                gl.clearColor(0.2, 0.2, 0.2, 1.0);
-                gl.enable(gl.DEPTH_TEST);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-                this.loadBuffers();
-                this.loadShaders();
-            }
-        }
+        this.loadBuffers();
+        this.loadShaders();
     }
 
     public addButtonListener(): void {
