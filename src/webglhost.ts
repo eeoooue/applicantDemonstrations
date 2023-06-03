@@ -31,7 +31,7 @@ export class WebGlHost {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 
-        if (canvas && canvas instanceof HTMLCanvasElement) {
+        if (canvas instanceof HTMLCanvasElement) {
 
             this.gl = canvas.getContext("webgl");
 
@@ -337,23 +337,20 @@ export class WebGlHost {
         var gl: WebGLRenderingContext = this.gl;
 
         var vertexShaderCode = this.getCodeSnippet();
-        var vertShader = gl.createShader(gl.VERTEX_SHADER);
-
+        const vertShader : WebGLShader | null = gl.createShader(gl.VERTEX_SHADER);
 
         if (!vertShader) {
             return;
         }
 
-
         gl.shaderSource(vertShader, vertexShaderCode);
         gl.compileShader(vertShader);
 
-        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+        const fragShader : WebGLShader | null = gl.createShader(gl.FRAGMENT_SHADER);
 
         if (!fragShader) {
             return;
         }
-
 
         gl.shaderSource(fragShader, this.fragmentShaderCode);
         gl.compileShader(fragShader);
@@ -431,10 +428,7 @@ export class WebGlHost {
 
                 var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
                 gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = this.rotation + 0.01;
-                if (this.rotation > 6.28) {
-                    this.rotation = this.rotation - 6.28;
-                }
+                this.rotation = (this.rotation + 0.01) % 6.28;
             }
         }
 
