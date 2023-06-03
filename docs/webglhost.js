@@ -1,7 +1,8 @@
 export class WebGlHost {
-    constructor(vertices, indices, vertexShaderCode, fragmentShaderCode, pageString) {
+    constructor(glInstance, vertices, indices, vertexShaderCode, fragmentShaderCode, pageString) {
         this.cameraPosition = [0.0, 0.0, 0.0];
         this.rotation = 0;
+        this.gl = glInstance;
         this.vertices = vertices;
         this.indices = indices;
         this.vertexShaderCode = vertexShaderCode;
@@ -11,19 +12,8 @@ export class WebGlHost {
         this.addButtonListener();
     }
     initialiseWebGL() {
-        const canvas = document.getElementById("webGLCanvas");
-        if (canvas instanceof HTMLCanvasElement) {
-            this.gl = canvas.getContext("webgl");
-            if (this.gl) {
-                var gl = this.gl;
-                gl.clearColor(0.2, 0.2, 0.2, 1.0);
-                gl.enable(gl.DEPTH_TEST);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-                this.loadBuffers();
-                this.loadShaders();
-            }
-        }
+        this.loadBuffers();
+        this.loadShaders();
     }
     addButtonListener() {
         var button = document.getElementById("update-button");
@@ -45,9 +35,6 @@ export class WebGlHost {
         }
     }
     renderCycle() {
-        if (!this.gl) {
-            return;
-        }
         var gl = this.gl;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -60,9 +47,6 @@ export class WebGlHost {
         return ans;
     }
     loadBuffers() {
-        if (!this.gl) {
-            return;
-        }
         var gl = this.gl;
         var vertex_buffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
@@ -78,7 +62,7 @@ export class WebGlHost {
     }
     //#region shaderProgram
     setupShaderProgram(vertShader, fragShader) {
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
         var gl = this.gl;
@@ -89,9 +73,6 @@ export class WebGlHost {
     }
     loadShaders() {
         // this is always called by any webgl demo
-        if (!this.gl) {
-            return;
-        }
         var gl = this.gl;
         const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
         const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
@@ -102,9 +83,6 @@ export class WebGlHost {
         this.setupShaderProgram(vertShader, fragShader);
     }
     compileShader(type, shaderCode) {
-        if (!this.gl) {
-            return;
-        }
         var gl = this.gl;
         const shader = gl.createShader(type);
         if (shader) {
@@ -135,7 +113,7 @@ export class WebGlHost {
         this.renderCycle();
     }
     updateSimpleCameraPosition() {
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
         var gl = this.gl;
@@ -143,7 +121,7 @@ export class WebGlHost {
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
     }
     updateRotation() {
-        if (this.gl && this.shaderProgram) {
+        if (this.shaderProgram) {
             var gl = this.gl;
             var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
             gl.uniform1f(uRotationLocation, this.rotation);
@@ -153,7 +131,7 @@ export class WebGlHost {
         window.requestAnimationFrame(() => { this.updateRotation(); });
     }
     bindAttribute(attributeName, offset) {
-        if (!this.gl || !this.shaderProgram) {
+        if (!this.shaderProgram) {
             return;
         }
         var gl = this.gl;

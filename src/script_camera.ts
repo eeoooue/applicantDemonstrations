@@ -28,7 +28,7 @@ export class CameraDemo {
     constructor() {
 
         this.startingCode = this.vertexShaderCode;
-        this.initializeDemo();
+        this.initializeDemo(this.model);
         this.populateTextArea();
     }
 
@@ -40,11 +40,26 @@ export class CameraDemo {
         }
     }
 
-    public initializeDemo() {
+    public initializeDemo(model: SphereModel) {
 
-        var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "camera");
-        host.bindPositionAndNormal();
-        host.setupCameraMovement();
+        const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
+
+        if (canvas instanceof HTMLCanvasElement) {
+
+            const gl: WebGLRenderingContext | null = canvas.getContext("webgl");
+
+            if (gl instanceof WebGLRenderingContext) {
+
+                gl.clearColor(0.2, 0.2, 0.2, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+
+                var host = new WebGlHost(gl, model.vertices, model.indices, this.vertexShaderCode, this.fragmentShaderCode, "camera");
+                host.bindPositionAndNormal();
+                host.setupCameraMovement();
+            }
+        }
     }
 }
 
