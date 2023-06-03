@@ -187,6 +187,10 @@ export class WebGlHost {
             return;
         }
         var gl = this.gl;
+        this.shaderProgram = gl.createProgram();
+        if (!this.shaderProgram) {
+            return;
+        }
         var vertexShaderCode = this.getCodeSnippet();
         const vertShader = gl.createShader(gl.VERTEX_SHADER);
         if (!vertShader) {
@@ -200,10 +204,6 @@ export class WebGlHost {
         }
         gl.shaderSource(fragShader, this.fragmentShaderCode);
         gl.compileShader(fragShader);
-        this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
-            return;
-        }
         gl.attachShader(this.shaderProgram, vertShader);
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
@@ -211,15 +211,6 @@ export class WebGlHost {
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
         this.renderCycle();
-    }
-    bind_a_position() {
-        this.bindAttribute("a_position", 0);
-    }
-    bind_a_normal() {
-        this.bindAttribute("a_normal", 3 * 4);
-    }
-    bind_a_colour() {
-        this.bindAttribute("a_colour", 3 * 4);
     }
     bindAttribute(attributeName, offset) {
         if (!this.gl || !this.shaderProgram) {
@@ -231,18 +222,18 @@ export class WebGlHost {
         gl.enableVertexAttribArray(coord);
     }
     loadingPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_colour();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_colour", 3 * 4);
         this.renderCycle();
     }
     cameraPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
     }
     lightingPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
     }
     reloadBuffers() {

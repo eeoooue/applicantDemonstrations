@@ -285,6 +285,11 @@ export class WebGlHost {
         }
 
         var gl: WebGLRenderingContext = this.gl;
+        this.shaderProgram = gl.createProgram();
+
+        if (!this.shaderProgram) {
+            return;
+        }
 
         var vertexShaderCode = this.getCodeSnippet();
         const vertShader : WebGLShader | null = gl.createShader(gl.VERTEX_SHADER);
@@ -306,11 +311,6 @@ export class WebGlHost {
         gl.compileShader(fragShader);
 
 
-        this.shaderProgram = gl.createProgram();
-
-        if (!this.shaderProgram) {
-            return;
-        }
 
         gl.attachShader(this.shaderProgram, vertShader);
         gl.attachShader(this.shaderProgram, fragShader);
@@ -327,21 +327,6 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    bind_a_position(): void {
-
-        this.bindAttribute("a_position", 0);
-    }
-
-    bind_a_normal(): void {
-
-        this.bindAttribute("a_normal", 3 * 4);
-    }
-
-    bind_a_colour() {
-
-        this.bindAttribute("a_colour", 3 * 4);
-    }
-
     bindAttribute(attributeName: string, offset: number){
 
         if (!this.gl || !this.shaderProgram) {
@@ -356,22 +341,22 @@ export class WebGlHost {
 
     loadingPageBindShaders() {
 
-        this.bind_a_position();
-        this.bind_a_colour();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_colour", 3 * 4);
         this.renderCycle();
     }
 
     cameraPageBindShaders() {
 
-        this.bind_a_position();
-        this.bind_a_normal();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
     }
 
     lightingPageBindShaders() {
 
-        this.bind_a_position();
-        this.bind_a_normal();
+        this.bindAttribute("a_position", 0);
+        this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
     }
 
