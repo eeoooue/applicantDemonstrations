@@ -78,20 +78,6 @@ export class WebGlHost {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
     //#region shaderProgram
-    loadShaders() {
-        // this is always called by any webgl demo
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader();
-        this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram || !vertShader || !fragShader) {
-            return;
-        }
-        this.setupShaderProgram(vertShader, fragShader);
-    }
     recompileVertexShader() {
         if (!this.gl) {
             return;
@@ -128,40 +114,35 @@ export class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-    reloadPixelShader() {
-        // specific to lighting page 
-        this.fragmentShaderCode = this.getCodeSnippet();
+    loadShaders() {
+        // this is always called by any webgl demo
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
-        this.shaderProgram = gl.createProgram();
         const vertShader = this.recompileVertexShader();
         const fragShader = this.recompileFragmentShader();
+        this.shaderProgram = gl.createProgram();
         if (!vertShader || !fragShader) {
             return;
         }
         this.setupShaderProgram(vertShader, fragShader);
+    }
+    reloadPixelShader() {
+        // specific to lighting page 
+        this.fragmentShaderCode = this.getCodeSnippet();
+        this.loadShaders();
         this.lightingPageBindShaders();
         this.renderCycle();
     }
     reloadVertexShader() {
         // specific to camera page
         this.vertexShaderCode = this.getCodeSnippet();
-        if (!this.gl) {
+        this.loadShaders();
+        if (!this.gl || !this.shaderProgram) {
             return;
         }
         var gl = this.gl;
-        this.shaderProgram = gl.createProgram();
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader();
-        if (!vertShader || !fragShader) {
-            return;
-        }
-        this.setupShaderProgram(vertShader, fragShader);
-        if (!this.shaderProgram) {
-            return;
-        }
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
         this.renderCycle();

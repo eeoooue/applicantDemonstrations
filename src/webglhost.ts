@@ -23,6 +23,7 @@ export class WebGlHost {
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
         this.pageString = pageString;
+
         this.initialiseWebGL();
         this.addButtonListener();
     }
@@ -125,27 +126,6 @@ export class WebGlHost {
 
     //#region shaderProgram
 
-    loadShaders(): void {
-
-        // this is always called by any webgl demo
-
-        if (!this.gl) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader()
-        this.shaderProgram = gl.createProgram();
-
-        if (!this.shaderProgram || !vertShader || !fragShader) {
-            return;
-        }
-
-        this.setupShaderProgram(vertShader, fragShader);
-    }
-
-
     recompileVertexShader() {
 
         if (!this.gl) {
@@ -196,26 +176,34 @@ export class WebGlHost {
     }
 
 
-    reloadPixelShader(): void {
+    loadShaders(): void {
 
-        // specific to lighting page 
-
-        this.fragmentShaderCode = this.getCodeSnippet();
+        // this is always called by any webgl demo
 
         if (!this.gl) {
             return;
         }
 
         var gl: WebGLRenderingContext = this.gl;
-        this.shaderProgram = gl.createProgram();
         const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader();
+        const fragShader = this.recompileFragmentShader()
+        this.shaderProgram = gl.createProgram();
 
         if (!vertShader || !fragShader) {
             return;
         }
 
         this.setupShaderProgram(vertShader, fragShader);
+    }
+
+
+    reloadPixelShader(): void {
+
+        // specific to lighting page 
+
+        this.fragmentShaderCode = this.getCodeSnippet();
+        this.loadShaders();
+
         this.lightingPageBindShaders();
         this.renderCycle();
     }
@@ -225,25 +213,13 @@ export class WebGlHost {
         // specific to camera page
 
         this.vertexShaderCode = this.getCodeSnippet();
+        this.loadShaders();
 
-        if (!this.gl) {
+        if (!this.gl || !this.shaderProgram) {
             return;
         }
 
         var gl: WebGLRenderingContext = this.gl;
-        this.shaderProgram = gl.createProgram();
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader();
-
-        if (!vertShader || !fragShader) {
-            return;
-        }
-
-        this.setupShaderProgram(vertShader, fragShader);
-
-        if (!this.shaderProgram) {
-            return;
-        }
 
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation,
@@ -334,10 +310,6 @@ export class WebGlHost {
         return false;
     }
 
-
-
-
-
     getCodeSnippet(): string {
 
         const codeSection: HTMLElement | null = document.getElementById("code");
@@ -348,8 +320,6 @@ export class WebGlHost {
 
         return "";
     }
-
-
 
     loadingPageBindShaders() {
 
