@@ -27,6 +27,7 @@ export class LightingDemo {
     public startingCode: string;
 
     public model: StanfordBunny = new StanfordBunny();
+    public host: WebGlHost | undefined;
 
     constructor() {
 
@@ -45,9 +46,9 @@ export class LightingDemo {
 
     public initializeDemo() {
 
-        var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
-        host.lightingPageBindShaders();
-        host.startRotationLoop();
+        this.host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
+        this.host.lightingPageBindShaders();
+        this.host.startRotationLoop();
     }
 }
 

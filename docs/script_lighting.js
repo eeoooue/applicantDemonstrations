@@ -30,9 +30,9 @@ export class LightingDemo {
         }
     }
     initializeDemo() {
-        var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
-        host.lightingPageBindShaders();
-        host.startRotationLoop();
+        this.host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
+        this.host.lightingPageBindShaders();
+        this.host.startRotationLoop();
     }
 }
 new LightingDemo();
