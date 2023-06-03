@@ -204,6 +204,20 @@ export class WebGlHost {
         return fragShader;
     }
 
+    setupShaderProgram(vertShader: WebGLShader, fragShader: WebGLShader){
+
+        if (!this.gl || !this.shaderProgram){
+            return;
+        }
+
+        var gl: WebGLRenderingContext = this.gl;
+
+        gl.attachShader(this.shaderProgram, vertShader);
+        gl.attachShader(this.shaderProgram, fragShader);
+        gl.linkProgram(this.shaderProgram);
+        gl.useProgram(this.shaderProgram);
+    }
+
 
     reloadPixelShader(): void {
 
@@ -213,26 +227,21 @@ export class WebGlHost {
             return;
         }
 
+        this.fragmentShaderCode = this.getCodeSnippet();
+
         var gl: WebGLRenderingContext = this.gl;
         this.shaderProgram = gl.createProgram();
-
-        this.fragmentShaderCode = this.getCodeSnippet();
         const vertShader = this.recompileVertexShader();
         const fragShader = this.recompileFragmentShader();
 
-        if (!this.shaderProgram || !vertShader || !fragShader){
+        if (!vertShader || !fragShader){
             return;
         }
 
-        gl.attachShader(this.shaderProgram, vertShader);
-        gl.attachShader(this.shaderProgram, fragShader);
-        gl.linkProgram(this.shaderProgram);
-        gl.useProgram(this.shaderProgram);
+        this.setupShaderProgram(vertShader, fragShader);
         this.lightingPageBindShaders();
         this.renderCycle();
     }
-
-
 
     reloadVertexShader() {
 
@@ -242,21 +251,22 @@ export class WebGlHost {
             return;
         }
 
+        this.vertexShaderCode = this.getCodeSnippet();
+
         var gl: WebGLRenderingContext = this.gl;
         this.shaderProgram = gl.createProgram();
-
-        this.vertexShaderCode = this.getCodeSnippet();
         const vertShader = this.recompileVertexShader();
         const fragShader = this.recompileFragmentShader();
 
-        if (!this.shaderProgram || !vertShader || !fragShader){
+        if (!vertShader || !fragShader){
             return;
         }
 
-        gl.attachShader(this.shaderProgram, vertShader);
-        gl.attachShader(this.shaderProgram, fragShader);
-        gl.linkProgram(this.shaderProgram);
-        gl.useProgram(this.shaderProgram);
+        this.setupShaderProgram(vertShader, fragShader);
+
+        if (!this.shaderProgram){
+            return;
+        }
 
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation,
