@@ -103,24 +103,6 @@ export class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-    bind_a_position() {
-        this.bindAttribute("a_position", 0);
-    }
-    bind_a_normal() {
-        this.bindAttribute("a_normal", 3 * 4);
-    }
-    bind_a_colour() {
-        this.bindAttribute("a_colour", 3 * 4);
-    }
-    bindAttribute(attributeName, offset) {
-        if (!this.gl || !this.shaderProgram) {
-            return;
-        }
-        var gl = this.gl;
-        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
-        gl.enableVertexAttribArray(coord);
-    }
     updateSimpleCameraPosition() {
         if (!this.gl) {
             return;
@@ -193,11 +175,6 @@ export class WebGlHost {
         this.lightingPageBindShaders();
         this.renderCycle();
     }
-    lightingPageBindShaders() {
-        this.bind_a_position();
-        this.bind_a_normal();
-        this.renderCycle();
-    }
     getCodeSnippet() {
         const codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
@@ -235,14 +212,37 @@ export class WebGlHost {
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
         this.renderCycle();
     }
+    bind_a_position() {
+        this.bindAttribute("a_position", 0);
+    }
+    bind_a_normal() {
+        this.bindAttribute("a_normal", 3 * 4);
+    }
+    bind_a_colour() {
+        this.bindAttribute("a_colour", 3 * 4);
+    }
+    bindAttribute(attributeName, offset) {
+        if (!this.gl || !this.shaderProgram) {
+            return;
+        }
+        var gl = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
+    }
+    loadingPageBindShaders() {
+        this.bind_a_position();
+        this.bind_a_colour();
+        this.renderCycle();
+    }
     cameraPageBindShaders() {
         this.bind_a_position();
         this.bind_a_normal();
         this.renderCycle();
     }
-    loadingPageBindShaders() {
+    lightingPageBindShaders() {
         this.bind_a_position();
-        this.bind_a_colour();
+        this.bind_a_normal();
         this.renderCycle();
     }
     reloadBuffers() {

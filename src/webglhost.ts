@@ -162,32 +162,7 @@ export class WebGlHost {
         gl.useProgram(this.shaderProgram);
     }
 
-    bind_a_position(): void {
-
-        this.bindAttribute("a_position", 0);
-    }
-
-    bind_a_normal(): void {
-
-        this.bindAttribute("a_normal", 3 * 4);
-    }
-
-    bind_a_colour() {
-
-        this.bindAttribute("a_colour", 3 * 4);
-    }
-
-    bindAttribute(attributeName: string, offset: number){
-
-        if (!this.gl || !this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
-        gl.enableVertexAttribArray(coord);
-    }
+    
 
     updateSimpleCameraPosition() {
 
@@ -290,12 +265,7 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    lightingPageBindShaders() {
-
-        this.bind_a_position();
-        this.bind_a_normal();
-        this.renderCycle();
-    }
+    
 
     getCodeSnippet(): string {
 
@@ -357,6 +327,40 @@ export class WebGlHost {
         this.renderCycle();
     }
 
+    bind_a_position(): void {
+
+        this.bindAttribute("a_position", 0);
+    }
+
+    bind_a_normal(): void {
+
+        this.bindAttribute("a_normal", 3 * 4);
+    }
+
+    bind_a_colour() {
+
+        this.bindAttribute("a_colour", 3 * 4);
+    }
+
+    bindAttribute(attributeName: string, offset: number){
+
+        if (!this.gl || !this.shaderProgram) {
+            return;
+        }
+
+        var gl: WebGLRenderingContext = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
+    }
+
+    loadingPageBindShaders() {
+
+        this.bind_a_position();
+        this.bind_a_colour();
+        this.renderCycle();
+    }
+
     cameraPageBindShaders() {
 
         this.bind_a_position();
@@ -364,10 +368,10 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    loadingPageBindShaders() {
+    lightingPageBindShaders() {
 
         this.bind_a_position();
-        this.bind_a_colour();
+        this.bind_a_normal();
         this.renderCycle();
     }
 
