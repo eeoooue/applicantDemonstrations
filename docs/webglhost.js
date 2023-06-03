@@ -77,7 +77,9 @@ export class WebGlHost {
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
+    //#region shaderProgram
     loadShaders() {
+        // this is always called by any webgl demo
         if (!this.gl) {
             return;
         }
@@ -103,43 +105,8 @@ export class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-    updateSimpleCameraPosition() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        if (!this.shaderProgram) {
-            return;
-        }
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
-    }
-    updateCameraPositionOnKeyUp(event) {
-        if (this.moveCamera(event.key)) {
-            this.updateSimpleCameraPosition();
-        }
-        this.renderCycle();
-    }
-    moveCamera(key) {
-        if (key == 'd') {
-            this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-            return true;
-        }
-        else if (key == 'a') {
-            this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-            return true;
-        }
-        else if (key == 'w') {
-            this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-            return true;
-        }
-        else if (key == 's') {
-            this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-            return true;
-        }
-        return false;
-    }
     reloadPixelShader() {
+        // specific to lighting page 
         if (!this.gl) {
             return;
         }
@@ -175,14 +142,8 @@ export class WebGlHost {
         this.lightingPageBindShaders();
         this.renderCycle();
     }
-    getCodeSnippet() {
-        const codeSection = document.getElementById("code");
-        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
-            return codeSection.value;
-        }
-        return "";
-    }
     reloadVertexShader() {
+        // specific to camera page
         if (!this.gl) {
             return;
         }
@@ -221,6 +182,59 @@ export class WebGlHost {
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
         gl.enableVertexAttribArray(coord);
     }
+    updateSimpleCameraPosition() {
+        if (!this.gl || !this.shaderProgram) {
+            return;
+        }
+        var gl = this.gl;
+        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
+        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
+    }
+    updateRotation() {
+        if (this.gl) {
+            var gl = this.gl;
+            if (this.shaderProgram) {
+                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+                gl.uniform1f(uRotationLocation, this.rotation);
+                this.rotation = (this.rotation + 0.01) % 6.28;
+            }
+        }
+        this.renderCycle();
+        window.requestAnimationFrame(() => { this.updateRotation(); });
+    }
+    //#endregion
+    updateCameraPositionOnKeyUp(event) {
+        if (this.moveCamera(event.key)) {
+            this.updateSimpleCameraPosition();
+        }
+        this.renderCycle();
+    }
+    moveCamera(key) {
+        if (key == 'd') {
+            this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
+            return true;
+        }
+        else if (key == 'a') {
+            this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
+            return true;
+        }
+        else if (key == 'w') {
+            this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
+            return true;
+        }
+        else if (key == 's') {
+            this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
+            return true;
+        }
+        return false;
+    }
+    getCodeSnippet() {
+        const codeSection = document.getElementById("code");
+        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
+            return codeSection.value;
+        }
+        return "";
+    }
     loadingPageBindShaders() {
         this.bindAttribute("a_position", 0);
         this.bindAttribute("a_colour", 3 * 4);
@@ -237,6 +251,7 @@ export class WebGlHost {
         this.renderCycle();
     }
     reloadBuffers() {
+        // specific to loading page
         var textAreaContent = this.getCodeSnippet();
         this.vertices = this.toNumArray(textAreaContent.split(","));
         this.loadBuffers();
@@ -248,18 +263,6 @@ export class WebGlHost {
         }, false);
     }
     startRotationLoop() {
-        window.requestAnimationFrame(() => { this.updateRotation(); });
-    }
-    updateRotation() {
-        if (this.gl) {
-            var gl = this.gl;
-            if (this.shaderProgram) {
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = (this.rotation + 0.01) % 6.28;
-            }
-        }
-        this.renderCycle();
         window.requestAnimationFrame(() => { this.updateRotation(); });
     }
 }
