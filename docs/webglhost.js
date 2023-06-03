@@ -84,52 +84,39 @@ export class WebGlHost {
             return;
         }
         var gl = this.gl;
-        var vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return;
-        }
-        gl.shaderSource(vertShader, this.vertexShaderCode);
-        gl.compileShader(vertShader);
-        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return;
-        }
-        gl.shaderSource(fragShader, this.fragmentShaderCode);
-        gl.compileShader(fragShader);
+        const vertShader = this.recompileVertexShader();
+        const fragShader = this.recompileFragmentShader();
         this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
+        if (!this.shaderProgram || !vertShader || !fragShader) {
             return;
         }
-        gl.attachShader(this.shaderProgram, vertShader);
-        gl.attachShader(this.shaderProgram, fragShader);
-        gl.linkProgram(this.shaderProgram);
-        gl.useProgram(this.shaderProgram);
+        this.setupShaderProgram(vertShader, fragShader);
     }
     recompileVertexShader() {
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
-        var vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return undefined;
-        }
-        gl.shaderSource(vertShader, this.vertexShaderCode);
-        gl.compileShader(vertShader);
-        return vertShader;
+        return this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
     }
     recompileFragmentShader() {
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
-        var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return undefined;
+        return this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
+    }
+    compileShader(type, shaderCode) {
+        if (!this.gl) {
+            return;
         }
-        gl.shaderSource(fragShader, this.fragmentShaderCode);
-        gl.compileShader(fragShader);
-        return fragShader;
+        var gl = this.gl;
+        const shader = gl.createShader(type);
+        if (shader) {
+            gl.shaderSource(shader, shaderCode);
+            gl.compileShader(shader);
+            return shader;
+        }
     }
     setupShaderProgram(vertShader, fragShader) {
         if (!this.gl || !this.shaderProgram) {
@@ -143,10 +130,10 @@ export class WebGlHost {
     }
     reloadPixelShader() {
         // specific to lighting page 
+        this.fragmentShaderCode = this.getCodeSnippet();
         if (!this.gl) {
             return;
         }
-        this.fragmentShaderCode = this.getCodeSnippet();
         var gl = this.gl;
         this.shaderProgram = gl.createProgram();
         const vertShader = this.recompileVertexShader();
@@ -160,10 +147,10 @@ export class WebGlHost {
     }
     reloadVertexShader() {
         // specific to camera page
+        this.vertexShaderCode = this.getCodeSnippet();
         if (!this.gl) {
             return;
         }
-        this.vertexShaderCode = this.getCodeSnippet();
         var gl = this.gl;
         this.shaderProgram = gl.createProgram();
         const vertShader = this.recompileVertexShader();
