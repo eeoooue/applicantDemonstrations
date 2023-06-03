@@ -35,7 +35,6 @@ export class LightingDemo {
         this.populateTextArea();
     }
 
-
     public populateTextArea() {
 
         const codeSection: HTMLElement | null = document.getElementById("code");
