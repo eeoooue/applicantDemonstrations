@@ -1,5 +1,6 @@
-var StanfordBunny = /** @class */ (function () {
-    function StanfordBunny() {
+"use strict";
+class StanfordBunny {
+    constructor() {
         this.bunnyIndices = [
             0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 23, 29, 30, 30, 29, 31, 31,
             32, 33, 27, 34, 28, 35, 36, 26, 36, 27, 26, 33, 37, 38, 37, 39, 40, 39, 41, 42, 40, 39, 42, 42, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51,
@@ -11710,10 +11711,9 @@ var StanfordBunny = /** @class */ (function () {
             0.007019, -0.304784, -0.618703, 0.037066, 0.078818, -0.996341, -0.033053
         ];
     }
-    return StanfordBunny;
-}());
-var SphereModel = /** @class */ (function () {
-    function SphereModel() {
+}
+class SphereModel {
+    constructor() {
         this.sphereIndices = [
             0, 1, 2, 3, 4, 5, 0, 2, 6, 0, 6, 7, 0, 7, 8, 3, 5, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 3, 9, 22, 10, 12, 23, 13, 15, 24, 16, 18,
             25, 19, 21, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 11, 10, 43, 44, 42, 2, 45, 43, 42, 44, 11, 44, 46, 11,
@@ -11833,17 +11833,15 @@ var SphereModel = /** @class */ (function () {
             0.727531, -0.518143,
         ];
     }
-    return SphereModel;
-}());
-var TriangleModel = /** @class */ (function () {
-    function TriangleModel() {
+}
+class TriangleModel {
+    constructor() {
         this.indices = [0, 1, 2];
         this.vertices = [0.0, 0.75, 0.0, 1.0, 0.0, 0.0, -0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0];
     }
-    return TriangleModel;
-}());
-var WebGlHost = /** @class */ (function () {
-    function WebGlHost(vertices, indices, vertexShaderCode, fragmentShaderCode, pageString) {
+}
+class WebGlHost {
+    constructor(vertices, indices, vertexShaderCode, fragmentShaderCode, pageString) {
         this.cameraPosition = [0.0, 0.0, 0.0];
         this.rotation = 0;
         this.vertices = vertices;
@@ -11854,8 +11852,8 @@ var WebGlHost = /** @class */ (function () {
         this.initialiseWebGL();
         this.addButtonListener();
     }
-    WebGlHost.prototype.initialiseWebGL = function () {
-        var canvas = document.getElementById("webGLCanvas");
+    initialiseWebGL() {
+        const canvas = document.getElementById("webGLCanvas");
         if (canvas && canvas instanceof HTMLCanvasElement) {
             this.gl = canvas.getContext("webgl");
             if (!this.gl) {
@@ -11869,15 +11867,14 @@ var WebGlHost = /** @class */ (function () {
             this.loadBuffers();
             this.loadShaders();
         }
-    };
-    WebGlHost.prototype.addButtonListener = function () {
-        var _this = this;
+    }
+    addButtonListener() {
         var button = document.getElementById("update-button");
-        button === null || button === void 0 ? void 0 : button.addEventListener("click", function () {
-            _this.clickEvent();
+        button === null || button === void 0 ? void 0 : button.addEventListener("click", () => {
+            this.clickEvent();
         });
-    };
-    WebGlHost.prototype.clickEvent = function () {
+    }
+    clickEvent() {
         switch (this.pageString) {
             case "loading":
                 this.reloadBuffers();
@@ -11889,23 +11886,23 @@ var WebGlHost = /** @class */ (function () {
                 this.reloadPixelShader();
                 return;
         }
-    };
-    WebGlHost.prototype.renderCycle = function () {
+    }
+    renderCycle() {
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
-    };
-    WebGlHost.prototype.toNumArray = function (strings) {
+    }
+    toNumArray(strings) {
         var ans = new Array();
         strings.forEach(function (s) {
             ans.push(+s);
         });
         return ans;
-    };
-    WebGlHost.prototype.loadBuffers = function () {
+    }
+    loadBuffers() {
         if (!this.gl) {
             return;
         }
@@ -11921,8 +11918,8 @@ var WebGlHost = /** @class */ (function () {
         /*======= Associating shaders to buffer objects =======*/
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
-    };
-    WebGlHost.prototype.loadShaders = function () {
+    }
+    loadShaders() {
         if (!this.gl) {
             return;
         }
@@ -11947,8 +11944,8 @@ var WebGlHost = /** @class */ (function () {
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
-    };
-    WebGlHost.prototype.bind_a_position = function () {
+    }
+    bind_a_position() {
         if (!this.gl) {
             return;
         }
@@ -11960,8 +11957,8 @@ var WebGlHost = /** @class */ (function () {
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 0);
         gl.enableVertexAttribArray(coord);
         this.renderCycle();
-    };
-    WebGlHost.prototype.bind_a_normal = function () {
+    }
+    bind_a_normal() {
         if (!this.gl) {
             return;
         }
@@ -11973,8 +11970,8 @@ var WebGlHost = /** @class */ (function () {
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
         gl.enableVertexAttribArray(coord);
         this.renderCycle();
-    };
-    WebGlHost.prototype.bind_a_colour = function () {
+    }
+    bind_a_colour() {
         if (!this.gl) {
             return;
         }
@@ -11985,8 +11982,8 @@ var WebGlHost = /** @class */ (function () {
         var coord = gl.getAttribLocation(this.shaderProgram, "a_colour");
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
         gl.enableVertexAttribArray(coord);
-    };
-    WebGlHost.prototype.updateSimpleCameraPosition = function () {
+    }
+    updateSimpleCameraPosition() {
         if (!this.gl) {
             return;
         }
@@ -11996,14 +11993,14 @@ var WebGlHost = /** @class */ (function () {
         }
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
-    };
-    WebGlHost.prototype.updateCameraPositionOnKeyUp = function (event) {
+    }
+    updateCameraPositionOnKeyUp(event) {
         if (this.moveCamera(event.key)) {
             this.updateSimpleCameraPosition();
         }
         this.renderCycle();
-    };
-    WebGlHost.prototype.moveCamera = function (key) {
+    }
+    moveCamera(key) {
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
             return true;
@@ -12021,8 +12018,8 @@ var WebGlHost = /** @class */ (function () {
             return true;
         }
         return false;
-    };
-    WebGlHost.prototype.reloadPixelShader = function () {
+    }
+    reloadPixelShader() {
         if (!this.gl) {
             return;
         }
@@ -12033,7 +12030,7 @@ var WebGlHost = /** @class */ (function () {
         }
         gl.shaderSource(vertShader, this.vertexShaderCode);
         gl.compileShader(vertShader);
-        var codeElement = document.getElementById("code");
+        const codeElement = document.getElementById("code");
         if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)) {
             return;
         }
@@ -12057,15 +12054,15 @@ var WebGlHost = /** @class */ (function () {
         gl.useProgram(this.shaderProgram);
         this.lightingPageBindShaders();
         this.renderCycle();
-    };
-    WebGlHost.prototype.getCodeSnippet = function () {
-        var codeSection = document.getElementById("code");
+    }
+    getCodeSnippet() {
+        const codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             return codeSection.value;
         }
         return "";
-    };
-    WebGlHost.prototype.reloadVertexShader = function () {
+    }
+    reloadVertexShader() {
         if (!this.gl) {
             return;
         }
@@ -12094,40 +12091,37 @@ var WebGlHost = /** @class */ (function () {
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
         this.renderCycle();
-    };
-    WebGlHost.prototype.cameraPageBindShaders = function () {
+    }
+    cameraPageBindShaders() {
         this.bind_a_position();
         this.bind_a_normal();
         this.renderCycle();
-    };
-    WebGlHost.prototype.lightingPageBindShaders = function () {
+    }
+    lightingPageBindShaders() {
         this.bind_a_position();
         this.bind_a_normal();
         this.renderCycle();
-    };
-    WebGlHost.prototype.loadingPageBindShaders = function () {
+    }
+    loadingPageBindShaders() {
         this.bind_a_position();
         this.bind_a_colour();
         this.renderCycle();
-    };
-    WebGlHost.prototype.reloadBuffers = function () {
+    }
+    reloadBuffers() {
         var textAreaContent = this.getCodeSnippet();
         this.vertices = this.toNumArray(textAreaContent.split(","));
         this.loadBuffers();
         this.loadingPageBindShaders();
-    };
-    WebGlHost.prototype.setupCameraMovement = function () {
-        var _this = this;
-        document.addEventListener('keyup', function (event) {
-            _this.updateCameraPositionOnKeyUp(event);
+    }
+    setupCameraMovement() {
+        document.addEventListener('keyup', (event) => {
+            this.updateCameraPositionOnKeyUp(event);
         }, false);
-    };
-    WebGlHost.prototype.startRotationLoop = function () {
-        var _this = this;
-        window.requestAnimationFrame(function () { _this.updateRotation(); });
-    };
-    WebGlHost.prototype.updateRotation = function () {
-        var _this = this;
+    }
+    startRotationLoop() {
+        window.requestAnimationFrame(() => { this.updateRotation(); });
+    }
+    updateRotation() {
         if (this.gl) {
             var gl = this.gl;
             if (this.shaderProgram) {
@@ -12140,14 +12134,11 @@ var WebGlHost = /** @class */ (function () {
             }
         }
         this.renderCycle();
-        window.requestAnimationFrame(function () { _this.updateRotation(); });
-    };
-    return WebGlHost;
-}());
-var PageBuilder = /** @class */ (function () {
-    function PageBuilder() {
+        window.requestAnimationFrame(() => { this.updateRotation(); });
     }
-    PageBuilder.getHeader = function (page) {
+}
+class PageBuilder {
+    static getHeader(page) {
         var header = '\
         <div id="wrapper">\
             <h1 style=\"padding:15px;">Code Along at https://tinyurl.com/ct5nrhtd</h1>\
@@ -12168,35 +12159,32 @@ var PageBuilder = /** @class */ (function () {
             </div>\
             <div id="content">';
         return header;
-    };
-    PageBuilder.writeHeaderAndCanvas = function (page) {
-        var headerString = this.getHeader(page);
+    }
+    static writeHeaderAndCanvas(page) {
+        const headerString = this.getHeader(page);
         document.write(headerString);
-        var canvasString = '<canvas width="500" height="500" id="webGLCanvas"></canvas>';
+        const canvasString = '<canvas width="500" height="500" id="webGLCanvas"></canvas>';
         document.write(canvasString);
         this.writeForm();
-    };
-    PageBuilder.writePlainHeader = function (page) {
+    }
+    static writePlainHeader(page) {
         document.write(this.getHeader(page));
-    };
-    PageBuilder.writeForm = function () {
+    }
+    static writeForm() {
         var formText = '\
         <form action="javascript: donothing()">\
             <textarea id="code" name="vs" rows="15" cols="50"></textarea>\
                 <input type="submit" value="Update" id="update-button">\
         </form>';
         document.write(formText);
-    };
-    PageBuilder.writeFooter = function () {
+    }
+    static writeFooter() {
         var footerDiv = '</div><div id="footer"><p><b>Simon Grey</b> - <i>S.Grey@hull.ac.uk</i></p></div></div>';
         document.write(footerDiv);
-    };
-    return PageBuilder;
-}());
-var PageLoader = /** @class */ (function () {
-    function PageLoader() {
     }
-    PageLoader.initialiseLightingTutorial = function (vertices, indices) {
+}
+class PageLoader {
+    static initialiseLightingTutorial(vertices, indices) {
         var vertexShaderCode = 'attribute vec3 a_position;\r\n' +
             'attribute vec3 a_normal;\r\n\r\n' +
             'uniform float u_rotation;\r\n\r\n' +
@@ -12213,15 +12201,15 @@ var PageLoader = /** @class */ (function () {
             'void main(void) {\r\n' +
             ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
             '}';
-        var codeSection = document.getElementById("code");
+        const codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = fragmentShaderCode;
             var host = new WebGlHost(vertices, indices, vertexShaderCode, fragmentShaderCode, "lighting");
             host.lightingPageBindShaders();
             host.startRotationLoop();
         }
-    };
-    PageLoader.initialiseCameraTutorial = function (vertices, indices) {
+    }
+    static initialiseCameraTutorial(vertices, indices) {
         var vertexShaderCode = 'attribute vec3 a_position;\r\n' +
             'attribute vec3 a_normal;\r\n\r\n' +
             'uniform vec3 u_cameraPosition;\r\n\r\n' +
@@ -12235,15 +12223,15 @@ var PageLoader = /** @class */ (function () {
             'void main(void) {' +
             ' gl_FragColor = v_colour;' +
             '}';
-        var codeSection = document.getElementById("code");
+        const codeSection = document.getElementById("code");
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = vertexShaderCode;
             var host = new WebGlHost(vertices, indices, vertexShaderCode, fragmentShaderCode, "camera");
             host.cameraPageBindShaders();
             host.setupCameraMovement();
         }
-    };
-    PageLoader.initialiseVBOTutorial = function (vertices, indices) {
+    }
+    static initialiseVBOTutorial(vertices, indices) {
         var vertexShaderCode = 'attribute vec3 a_position;' +
             'attribute vec3 a_colour;' +
             'varying vec4 v_colour;' +
@@ -12256,25 +12244,24 @@ var PageLoader = /** @class */ (function () {
             'void main(void) {' +
             ' gl_FragColor = v_colour;' +
             '}';
-        var codeSection = document.getElementById("code");
-        var startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
+        const codeSection = document.getElementById("code");
+        const startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             codeSection.value = startingCode;
             var host = new WebGlHost(vertices, indices, vertexShaderCode, fragmentShaderCode, "loading");
             host.loadingPageBindShaders();
         }
-    };
-    return PageLoader;
-}());
+    }
+}
 function LoadBunnyPage() {
-    var bunnyModel = new StanfordBunny();
+    const bunnyModel = new StanfordBunny();
     PageLoader.initialiseLightingTutorial(bunnyModel.bunnyVertices, bunnyModel.bunnyIndices);
 }
 function loadCameraPage() {
-    var sphere = new SphereModel();
+    const sphere = new SphereModel();
     PageLoader.initialiseCameraTutorial(sphere.sphereVertices, sphere.sphereIndices);
 }
 function LoadLoadingPage() {
-    var triangle = new TriangleModel();
+    const triangle = new TriangleModel();
     PageLoader.initialiseVBOTutorial(triangle.vertices, triangle.indices);
 }

@@ -11849,11 +11849,9 @@ class TriangleModel {
 }
 
 
-
-
 class WebGlHost {
 
-    public gl: WebGLRenderingContext | null;
+    public gl: WebGLRenderingContext | undefined | null;
 
     public vertices: number[];
     public indices: number[];
@@ -11862,7 +11860,7 @@ class WebGlHost {
     public fragmentShaderCode: string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
     public rotation = 0;
-    public shaderProgram: WebGLProgram | null;
+    public shaderProgram: WebGLProgram | undefined | null;
 
     public pageString: string;
 
