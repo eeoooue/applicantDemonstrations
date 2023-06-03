@@ -36,18 +36,16 @@ export class WebGlHost {
 
             this.gl = canvas.getContext("webgl");
 
-            if (!this.gl) {
-                return;
+            if (this.gl) {
+                var gl: WebGLRenderingContext = this.gl;
+
+                gl.clearColor(0.2, 0.2, 0.2, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                this.loadBuffers();
+                this.loadShaders();
             }
-
-            var gl: WebGLRenderingContext = this.gl;
-
-            gl.clearColor(0.2, 0.2, 0.2, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            this.loadBuffers();
-            this.loadShaders();
         }
     }
 
@@ -84,7 +82,6 @@ export class WebGlHost {
         }
 
         var gl: WebGLRenderingContext = this.gl;
-
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
     }
@@ -126,41 +123,6 @@ export class WebGlHost {
 
     //#region shaderProgram
 
-    recompileVertexShader() {
-
-        if (!this.gl) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        return this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
-    }
-
-    recompileFragmentShader() {
-
-        if (!this.gl) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        return this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
-    }
-
-    compileShader(type: number, shaderCode: string): WebGLShader | undefined {
-
-        if (!this.gl) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        const shader: WebGLShader | null = gl.createShader(type);
-        if (shader) {
-            gl.shaderSource(shader, shaderCode);
-            gl.compileShader(shader);
-            return shader;
-        }
-    }
-
     setupShaderProgram(vertShader: WebGLShader, fragShader: WebGLShader) {
 
         if (!this.gl || !this.shaderProgram) {
@@ -185,8 +147,8 @@ export class WebGlHost {
         }
 
         var gl: WebGLRenderingContext = this.gl;
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader()
+        const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
+        const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
         this.shaderProgram = gl.createProgram();
 
         if (!vertShader || !fragShader) {
@@ -196,6 +158,30 @@ export class WebGlHost {
         this.setupShaderProgram(vertShader, fragShader);
     }
 
+    compileShader(type: number, shaderCode: string): WebGLShader | undefined {
+
+        if (!this.gl) {
+            return;
+        }
+
+        var gl: WebGLRenderingContext = this.gl;
+        const shader: WebGLShader | null = gl.createShader(type);
+        if (shader) {
+            gl.shaderSource(shader, shaderCode);
+            gl.compileShader(shader);
+            return shader;
+        }
+    }
+
+    reloadBuffers() {
+
+        // specific to loading page
+
+        var textAreaContent = this.getCodeSnippet();
+        this.vertices = this.toNumArray(textAreaContent.split(","));
+        this.loadBuffers();
+        this.loadingPageBindShaders();
+    }
 
     reloadPixelShader(): void {
 
@@ -203,8 +189,7 @@ export class WebGlHost {
 
         this.fragmentShaderCode = this.getCodeSnippet();
         this.loadShaders();
-
-        this.lightingPageBindShaders();
+        this.bindPositionAndNormal();
         this.renderCycle();
     }
 
@@ -214,21 +199,33 @@ export class WebGlHost {
 
         this.vertexShaderCode = this.getCodeSnippet();
         this.loadShaders();
+        this.updateSimpleCameraPosition();
+        this.renderCycle();
+    }
+
+    updateSimpleCameraPosition() {
 
         if (!this.gl || !this.shaderProgram) {
             return;
         }
 
         var gl: WebGLRenderingContext = this.gl;
-
         var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation,
-            this.cameraPosition[0],
-            this.cameraPosition[1],
-            this.cameraPosition[2]
-        );
+        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
+    }
+
+    public updateRotation() {
+
+        if (this.gl && this.shaderProgram) {
+
+            var gl: WebGLRenderingContext = this.gl;
+            var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+            gl.uniform1f(uRotationLocation, this.rotation);
+            this.rotation = (this.rotation + 0.01) % 6.28;
+        }
 
         this.renderCycle();
+        window.requestAnimationFrame(() => { this.updateRotation() });
     }
 
     bindAttribute(attributeName: string, offset: number) {
@@ -241,40 +238,6 @@ export class WebGlHost {
         var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
         gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
         gl.enableVertexAttribArray(coord);
-    }
-
-    updateSimpleCameraPosition() {
-
-        if (!this.gl || !this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation,
-            this.cameraPosition[0],
-            this.cameraPosition[1],
-            this.cameraPosition[2]);
-    }
-
-    public updateRotation() {
-
-        if (this.gl) {
-
-            var gl: WebGLRenderingContext = this.gl;
-
-            if (this.shaderProgram) {
-
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = (this.rotation + 0.01) % 6.28;
-            }
-        }
-
-        this.renderCycle();
-
-        window.requestAnimationFrame(() => { this.updateRotation() });
     }
 
     //#endregion
@@ -292,32 +255,28 @@ export class WebGlHost {
 
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-            return true;
         }
         else if (key == 'a') {
             this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-            return true;
         }
         else if (key == 'w') {
             this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-            return true;
         }
         else if (key == 's') {
             this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-            return true;
         }
-
-        return false;
+        else {
+            return false;
+        }
+        return true;
     }
 
     getCodeSnippet(): string {
 
         const codeSection: HTMLElement | null = document.getElementById("code");
-
         if (codeSection && codeSection instanceof HTMLTextAreaElement) {
             return codeSection.value;
         }
-
         return "";
     }
 
@@ -328,28 +287,11 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    cameraPageBindShaders() {
+    bindPositionAndNormal() {
 
         this.bindAttribute("a_position", 0);
         this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
-    }
-
-    lightingPageBindShaders() {
-
-        this.bindAttribute("a_position", 0);
-        this.bindAttribute("a_normal", 3 * 4);
-        this.renderCycle();
-    }
-
-    reloadBuffers() {
-
-        // specific to loading page
-
-        var textAreaContent = this.getCodeSnippet();
-        this.vertices = this.toNumArray(textAreaContent.split(","));
-        this.loadBuffers();
-        this.loadingPageBindShaders();
     }
 
     setupCameraMovement() {
@@ -363,7 +305,5 @@ export class WebGlHost {
 
         window.requestAnimationFrame(() => { this.updateRotation() });
     }
-
-
 }
 

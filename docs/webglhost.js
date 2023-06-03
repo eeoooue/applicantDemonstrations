@@ -14,16 +14,15 @@ export class WebGlHost {
         const canvas = document.getElementById("webGLCanvas");
         if (canvas instanceof HTMLCanvasElement) {
             this.gl = canvas.getContext("webgl");
-            if (!this.gl) {
-                return;
+            if (this.gl) {
+                var gl = this.gl;
+                gl.clearColor(0.2, 0.2, 0.2, 1.0);
+                gl.enable(gl.DEPTH_TEST);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                this.loadBuffers();
+                this.loadShaders();
             }
-            var gl = this.gl;
-            gl.clearColor(0.2, 0.2, 0.2, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.viewport(0, 0, canvas.width, canvas.height);
-            this.loadBuffers();
-            this.loadShaders();
         }
     }
     addButtonListener() {
@@ -78,32 +77,6 @@ export class WebGlHost {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
     //#region shaderProgram
-    recompileVertexShader() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        return this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
-    }
-    recompileFragmentShader() {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        return this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
-    }
-    compileShader(type, shaderCode) {
-        if (!this.gl) {
-            return;
-        }
-        var gl = this.gl;
-        const shader = gl.createShader(type);
-        if (shader) {
-            gl.shaderSource(shader, shaderCode);
-            gl.compileShader(shader);
-            return shader;
-        }
-    }
     setupShaderProgram(vertShader, fragShader) {
         if (!this.gl || !this.shaderProgram) {
             return;
@@ -120,41 +93,46 @@ export class WebGlHost {
             return;
         }
         var gl = this.gl;
-        const vertShader = this.recompileVertexShader();
-        const fragShader = this.recompileFragmentShader();
+        const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
+        const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);
         this.shaderProgram = gl.createProgram();
         if (!vertShader || !fragShader) {
             return;
         }
         this.setupShaderProgram(vertShader, fragShader);
     }
+    compileShader(type, shaderCode) {
+        if (!this.gl) {
+            return;
+        }
+        var gl = this.gl;
+        const shader = gl.createShader(type);
+        if (shader) {
+            gl.shaderSource(shader, shaderCode);
+            gl.compileShader(shader);
+            return shader;
+        }
+    }
+    reloadBuffers() {
+        // specific to loading page
+        var textAreaContent = this.getCodeSnippet();
+        this.vertices = this.toNumArray(textAreaContent.split(","));
+        this.loadBuffers();
+        this.loadingPageBindShaders();
+    }
     reloadPixelShader() {
         // specific to lighting page 
         this.fragmentShaderCode = this.getCodeSnippet();
         this.loadShaders();
-        this.lightingPageBindShaders();
+        this.bindPositionAndNormal();
         this.renderCycle();
     }
     reloadVertexShader() {
         // specific to camera page
         this.vertexShaderCode = this.getCodeSnippet();
         this.loadShaders();
-        if (!this.gl || !this.shaderProgram) {
-            return;
-        }
-        var gl = this.gl;
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
+        this.updateSimpleCameraPosition();
         this.renderCycle();
-    }
-    bindAttribute(attributeName, offset) {
-        if (!this.gl || !this.shaderProgram) {
-            return;
-        }
-        var gl = this.gl;
-        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
-        gl.enableVertexAttribArray(coord);
     }
     updateSimpleCameraPosition() {
         if (!this.gl || !this.shaderProgram) {
@@ -165,16 +143,23 @@ export class WebGlHost {
         gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
     }
     updateRotation() {
-        if (this.gl) {
+        if (this.gl && this.shaderProgram) {
             var gl = this.gl;
-            if (this.shaderProgram) {
-                var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-                gl.uniform1f(uRotationLocation, this.rotation);
-                this.rotation = (this.rotation + 0.01) % 6.28;
-            }
+            var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
+            gl.uniform1f(uRotationLocation, this.rotation);
+            this.rotation = (this.rotation + 0.01) % 6.28;
         }
         this.renderCycle();
         window.requestAnimationFrame(() => { this.updateRotation(); });
+    }
+    bindAttribute(attributeName, offset) {
+        if (!this.gl || !this.shaderProgram) {
+            return;
+        }
+        var gl = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
     }
     //#endregion
     updateCameraPositionOnKeyUp(event) {
@@ -186,21 +171,20 @@ export class WebGlHost {
     moveCamera(key) {
         if (key == 'd') {
             this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-            return true;
         }
         else if (key == 'a') {
             this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-            return true;
         }
         else if (key == 'w') {
             this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-            return true;
         }
         else if (key == 's') {
             this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-            return true;
         }
-        return false;
+        else {
+            return false;
+        }
+        return true;
     }
     getCodeSnippet() {
         const codeSection = document.getElementById("code");
@@ -214,22 +198,10 @@ export class WebGlHost {
         this.bindAttribute("a_colour", 3 * 4);
         this.renderCycle();
     }
-    cameraPageBindShaders() {
+    bindPositionAndNormal() {
         this.bindAttribute("a_position", 0);
         this.bindAttribute("a_normal", 3 * 4);
         this.renderCycle();
-    }
-    lightingPageBindShaders() {
-        this.bindAttribute("a_position", 0);
-        this.bindAttribute("a_normal", 3 * 4);
-        this.renderCycle();
-    }
-    reloadBuffers() {
-        // specific to loading page
-        var textAreaContent = this.getCodeSnippet();
-        this.vertices = this.toNumArray(textAreaContent.split(","));
-        this.loadBuffers();
-        this.loadingPageBindShaders();
     }
     setupCameraMovement() {
         document.addEventListener('keyup', (event) => {

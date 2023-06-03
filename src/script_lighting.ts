@@ -47,7 +47,7 @@ export class LightingDemo {
     public initializeDemo() {
 
         this.host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
-        this.host.lightingPageBindShaders();
+        this.host.bindPositionAndNormal();
         this.host.startRotationLoop();
     }
 }
