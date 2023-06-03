@@ -14,18 +14,20 @@ export class LoadingDemo {
             'void main(void) {' +
             ' gl_FragColor = v_colour;' +
             '}';
-        this.startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
         this.model = new TriangleModel();
+        this.startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
         this.initializeDemo();
+        this.populateTextArea();
+    }
+    populateTextArea() {
+        const codeSection = document.getElementById("code");
+        if (codeSection instanceof HTMLTextAreaElement) {
+            codeSection.value = this.startingCode;
+        }
     }
     initializeDemo() {
-        const codeSection = document.getElementById("code");
-        const startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
-        if (codeSection && codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = startingCode;
-            var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "loading");
-            host.loadingPageBindShaders();
-        }
+        var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "loading");
+        host.loadingPageBindShaders();
     }
 }
 new LoadingDemo();
