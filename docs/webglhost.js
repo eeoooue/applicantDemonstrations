@@ -105,34 +105,43 @@ export class WebGlHost {
         gl.linkProgram(this.shaderProgram);
         gl.useProgram(this.shaderProgram);
     }
-    reloadPixelShader() {
-        // specific to lighting page 
+    recompileVertexShader() {
         if (!this.gl) {
             return;
         }
         var gl = this.gl;
         var vertShader = gl.createShader(gl.VERTEX_SHADER);
         if (!vertShader) {
-            return;
+            return undefined;
         }
         gl.shaderSource(vertShader, this.vertexShaderCode);
         gl.compileShader(vertShader);
-        const codeElement = document.getElementById("code");
-        if (!codeElement || !(codeElement instanceof HTMLTextAreaElement)) {
+        return vertShader;
+    }
+    recompileFragmentShader() {
+        if (!this.gl) {
             return;
         }
-        var fragmentShaderCode = codeElement.value;
+        var gl = this.gl;
         var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
         if (!fragShader) {
-            return;
+            return undefined;
         }
-        gl.shaderSource(fragShader, fragmentShaderCode);
+        gl.shaderSource(fragShader, this.fragmentShaderCode);
         gl.compileShader(fragShader);
-        if (!fragShader) {
+        return fragShader;
+    }
+    reloadPixelShader() {
+        // specific to lighting page 
+        if (!this.gl) {
             return;
         }
+        var gl = this.gl;
         this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
+        this.fragmentShaderCode = this.getCodeSnippet();
+        const vertShader = this.recompileVertexShader();
+        const fragShader = this.recompileFragmentShader();
+        if (!this.shaderProgram || !vertShader || !fragShader) {
             return;
         }
         gl.attachShader(this.shaderProgram, vertShader);
@@ -149,22 +158,12 @@ export class WebGlHost {
         }
         var gl = this.gl;
         this.shaderProgram = gl.createProgram();
-        if (!this.shaderProgram) {
+        this.vertexShaderCode = this.getCodeSnippet();
+        const vertShader = this.recompileVertexShader();
+        const fragShader = this.recompileFragmentShader();
+        if (!this.shaderProgram || !vertShader || !fragShader) {
             return;
         }
-        var vertexShaderCode = this.getCodeSnippet();
-        const vertShader = gl.createShader(gl.VERTEX_SHADER);
-        if (!vertShader) {
-            return;
-        }
-        gl.shaderSource(vertShader, vertexShaderCode);
-        gl.compileShader(vertShader);
-        const fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-        if (!fragShader) {
-            return;
-        }
-        gl.shaderSource(fragShader, this.fragmentShaderCode);
-        gl.compileShader(fragShader);
         gl.attachShader(this.shaderProgram, vertShader);
         gl.attachShader(this.shaderProgram, fragShader);
         gl.linkProgram(this.shaderProgram);
