@@ -42,7 +42,7 @@ export class CameraDemo {
 
     public initializeDemo() {
 
-        var host = new WebGlHost(this.model.sphereVertices, this.model.sphereIndices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
+        var host = new WebGlHost(this.model.vertices, this.model.indices, this.vertexShaderCode, this.fragmentShaderCode, "lighting");
         host.cameraPageBindShaders();
         host.setupCameraMovement();
     }
