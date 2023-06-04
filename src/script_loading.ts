@@ -1,6 +1,7 @@
 
 import { WebGlHost } from "./webglhost.js";
-import { TriangleModel } from "./models/triangle.js";
+import { GetTriangleModel } from "./models/triangle.js";
+import { Model } from "./model.js";
 
 export class LoadingDemo {
 
@@ -22,7 +23,7 @@ export class LoadingDemo {
 
     public startingCode: string;
 
-    public model: TriangleModel = new TriangleModel();
+    public model: Model = GetTriangleModel();
 
     public host: WebGlHost | undefined;
 
@@ -42,7 +43,7 @@ export class LoadingDemo {
         }
     }
 
-    public initializeDemo(model: TriangleModel) {
+    public initializeDemo(model: Model) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 

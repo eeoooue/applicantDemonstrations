@@ -1,4 +1,4 @@
-import { StanfordBunny } from "./models/stanfordbunny.js";
+import { GetBunnyModel } from "./models/stanfordbunny.js";
 import { WebGlHost } from "./webglhost.js";
 export class LightingDemo {
     constructor() {
@@ -18,7 +18,7 @@ export class LightingDemo {
             'void main(void) {\r\n' +
             ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
             '}';
-        this.model = new StanfordBunny();
+        this.model = GetBunnyModel();
         this.startingCode = this.fragmentShaderCode;
         this.initializeDemo(this.model);
         this.populateTextArea();

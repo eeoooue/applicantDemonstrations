@@ -1,5 +1,5 @@
 import { WebGlHost } from "./webglhost.js";
-import { TriangleModel } from "./models/triangle.js";
+import { GetTriangleModel } from "./models/triangle.js";
 export class LoadingDemo {
     constructor() {
         this.vertexShaderCode = 'attribute vec3 a_position;' +
@@ -14,7 +14,7 @@ export class LoadingDemo {
             'void main(void) {' +
             ' gl_FragColor = v_colour;' +
             '}';
-        this.model = new TriangleModel();
+        this.model = GetTriangleModel();
         this.startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
         this.initializeDemo(this.model);
         this.populateTextArea();

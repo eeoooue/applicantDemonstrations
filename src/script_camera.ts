@@ -1,5 +1,6 @@
 
-import { SphereModel } from "./models/sphere.js";
+import { Model } from "./model.js";
+import { GetSphereModel } from "./models/sphere.js";
 import { WebGlHost } from "./webglhost.js";
 
 export class CameraDemo {
@@ -23,7 +24,7 @@ export class CameraDemo {
 
     public startingCode: string;
 
-    public model: SphereModel = new SphereModel();
+    public model: Model = GetSphereModel();
 
     constructor() {
 
@@ -40,7 +41,7 @@ export class CameraDemo {
         }
     }
 
-    public initializeDemo(model: SphereModel) {
+    public initializeDemo(model: Model) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 

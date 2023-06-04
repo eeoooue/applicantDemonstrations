@@ -1,5 +1,6 @@
 
-import { StanfordBunny } from "./models/stanfordbunny.js";
+import { Model } from "./model.js";
+import { GetBunnyModel } from "./models/stanfordbunny.js";
 import { WebGlHost } from "./webglhost.js";
 
 export class LightingDemo {
@@ -26,7 +27,7 @@ export class LightingDemo {
 
     public startingCode: string;
 
-    public model: StanfordBunny = new StanfordBunny();
+    public model: Model = GetBunnyModel();
     public host: WebGlHost | undefined;
 
     constructor() {
@@ -44,7 +45,7 @@ export class LightingDemo {
         }
     }
 
-    public initializeDemo(model: StanfordBunny) {
+    public initializeDemo(model: Model) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 

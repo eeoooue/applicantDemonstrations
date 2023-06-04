@@ -1,4 +1,4 @@
-import { SphereModel } from "./models/sphere.js";
+import { GetSphereModel } from "./models/sphere.js";
 import { WebGlHost } from "./webglhost.js";
 export class CameraDemo {
     constructor() {
@@ -15,7 +15,7 @@ export class CameraDemo {
             'void main(void) {' +
             ' gl_FragColor = v_colour;' +
             '}';
-        this.model = new SphereModel();
+        this.model = GetSphereModel();
         this.startingCode = this.vertexShaderCode;
         this.initializeDemo(this.model);
         this.populateTextArea();
