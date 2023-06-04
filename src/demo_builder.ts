@@ -41,15 +41,13 @@ export class DemoBuilder {
 
                 switch (pageTitle) {
                     case "loading":
-                        this.host = new WebGlLoadingDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode);
+                        this.host = new WebGlLoadingDemo(gl, model, vertexShaderCode, fragmentShaderCode);
                         return;
-
                     case "lighting":
-                        this.host = new WebGlLightingDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode);
+                        this.host = new WebGlLightingDemo(gl, model, vertexShaderCode, fragmentShaderCode);
                         return;
-
                     case "camera":
-                        this.host = new WebGlCameraDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode);
+                        this.host = new WebGlCameraDemo(gl, model, vertexShaderCode, fragmentShaderCode);
                         return;
                 }
             }

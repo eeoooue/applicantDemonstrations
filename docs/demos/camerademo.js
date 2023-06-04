@@ -5,9 +5,6 @@ export class WebGlCameraDemo extends WebGlHost {
         this.setupCameraMovement();
     }
     clickEvent() {
-        this.reloadVertexShader();
-    }
-    reloadVertexShader() {
         this.vertexShaderCode = this.getCodeSnippet();
         this.loadShaders();
         this.updateSimpleCameraPosition();
@@ -33,21 +30,21 @@ export class WebGlCameraDemo extends WebGlHost {
         this.renderCycle();
     }
     moveCamera(key) {
-        if (key == 'd') {
-            this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
+        switch (key) {
+            case 'd':
+                this.cameraPosition[0] += 0.05;
+                return true;
+            case 'a':
+                this.cameraPosition[0] -= 0.05;
+                return true;
+            case 'w':
+                this.cameraPosition[1] += 0.05;
+                return true;
+            case 's':
+                this.cameraPosition[1] -= 0.05;
+                return true;
+            default:
+                return false;
         }
-        else if (key == 'a') {
-            this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-        }
-        else if (key == 'w') {
-            this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-        }
-        else if (key == 's') {
-            this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-        }
-        else {
-            return false;
-        }
-        return true;
     }
 }

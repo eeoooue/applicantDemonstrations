@@ -1,20 +1,17 @@
 export class WebGlHost {
-    constructor(glInstance, vertices, indices, vertexShaderCode, fragmentShaderCode) {
+    constructor(webGl, model, vertexShaderCode, fragmentShaderCode) {
         this.cameraPosition = [0.0, 0.0, 0.0];
-        this.gl = glInstance;
-        this.vertices = vertices;
-        this.indices = indices;
+        this.gl = webGl;
+        this.vertices = model.vertices;
+        this.indices = model.indices;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.initialiseWebGL();
+        this.loadBuffers();
+        this.loadShaders();
         this.addButtonListener();
         this.onloadHook();
     }
     onloadHook() { }
-    initialiseWebGL() {
-        this.loadBuffers();
-        this.loadShaders();
-    }
     addButtonListener() {
         var button = document.getElementById("update-button");
         button === null || button === void 0 ? void 0 : button.addEventListener("click", () => {
@@ -51,7 +48,6 @@ export class WebGlHost {
         gl.useProgram(this.shaderProgram);
     }
     loadShaders() {
-        // this is always called by any webgl demo
         var gl = this.gl;
         const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
         const fragShader = this.compileShader(gl.FRAGMENT_SHADER, this.fragmentShaderCode);

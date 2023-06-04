@@ -1,4 +1,4 @@
-
+import { Model } from "./model";
 
 export abstract class WebGlHost {
 
@@ -13,39 +13,32 @@ export abstract class WebGlHost {
     
     public shaderProgram: WebGLProgram | undefined | null;
 
-    constructor(glInstance: WebGLRenderingContext, vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string) {
+    constructor(webGl: WebGLRenderingContext, model: Model, vertexShaderCode: string, fragmentShaderCode: string) {
 
-        this.gl = glInstance;
-
-        this.vertices = vertices;
-        this.indices = indices;
+        this.gl = webGl;
+        this.vertices = model.vertices;
+        this.indices = model.indices;
 
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
 
-        this.initialiseWebGL();
+        this.loadBuffers();
+        this.loadShaders();
         this.addButtonListener();
         this.onloadHook();
     }
 
     public onloadHook(): void { }
 
-    private initialiseWebGL(): void {
-
-        this.loadBuffers();
-        this.loadShaders();
-    }
+    abstract clickEvent(): void;
 
     public addButtonListener(): void {
 
         var button = document.getElementById("update-button")
-
         button?.addEventListener("click", () => {
             this.clickEvent();
         })
     }
-
-    abstract clickEvent(): void;
 
     public renderCycle(): void {
 
@@ -90,8 +83,6 @@ export abstract class WebGlHost {
 
 
     loadShaders(): void {
-
-        // this is always called by any webgl demo
 
         var gl: WebGLRenderingContext = this.gl;
         const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
@@ -151,4 +142,3 @@ export abstract class WebGlHost {
         gl.enableVertexAttribArray(coord);
     }
 }
-
