@@ -3,6 +3,7 @@ import { CodeParcel } from "./code_parcel.js";
 import { GetSphereModel } from "./models/sphere.js";
 import { Model } from "./model.js";
 import { WebGlHost } from "./webglhost.js";
+import { WebGlCameraDemo } from "./demos/camerademo.js";
 
 
 export class CameraDemo {
@@ -36,7 +37,7 @@ export class CameraDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                var host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
+                var host = new WebGlCameraDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 host.bindPositionAndNormal();
                 host.setupCameraMovement();
             }

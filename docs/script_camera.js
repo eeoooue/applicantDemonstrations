@@ -1,6 +1,6 @@
 import { CodeParcel } from "./code_parcel.js";
 import { GetSphereModel } from "./models/sphere.js";
-import { WebGlHost } from "./webglhost.js";
+import { WebGlCameraDemo } from "./demos/camerademo.js";
 export class CameraDemo {
     constructor(model, parcel) {
         this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "camera");
@@ -21,7 +21,7 @@ export class CameraDemo {
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
-                var host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
+                var host = new WebGlCameraDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 host.bindPositionAndNormal();
                 host.setupCameraMovement();
             }

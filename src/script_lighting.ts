@@ -3,10 +3,11 @@ import { CodeParcel } from "./code_parcel.js";
 import { GetBunnyModel } from "./models/stanfordbunny.js";
 import { Model } from "./model.js";
 import { WebGlHost } from "./webglhost.js";
+import { WebGlLightingDemo } from "./demos/lightingdemo.js";
 
 export class LightingDemo {
 
-    public host: WebGlHost | undefined;
+    public host: WebGlLightingDemo | undefined;
 
     constructor(model: Model, parcel: CodeParcel) {
 
@@ -37,9 +38,7 @@ export class LightingDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
-                this.host.bindPositionAndNormal();
-                this.host.startRotationLoop();
+                this.host = new WebGlLightingDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
             }
         }
     }

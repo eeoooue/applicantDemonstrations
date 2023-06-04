@@ -1,6 +1,6 @@
 import { CodeParcel } from "./code_parcel.js";
 import { GetTriangleModel } from "./models/triangle.js";
-import { WebGlHost } from "./webglhost.js";
+import { WebGlLoadingDemo } from "./demos/loadingdemo.js";
 export class LoadingDemo {
     constructor(model, parcel) {
         this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "loading");
@@ -21,7 +21,7 @@ export class LoadingDemo {
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
+                this.host = new WebGlLoadingDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.loadingPageBindShaders();
             }
         }

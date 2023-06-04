@@ -1,6 +1,6 @@
 
 
-export class WebGlHost {
+export abstract class WebGlHost {
 
     public gl: WebGLRenderingContext;
 
@@ -28,7 +28,10 @@ export class WebGlHost {
 
         this.initialiseWebGL();
         this.addButtonListener();
+        this.onloadHook();
     }
+
+    public onloadHook(): void { }
 
     private initialiseWebGL(): void {
 
@@ -45,39 +48,13 @@ export class WebGlHost {
         })
     }
 
-    public clickEvent(): void {
-
-        switch (this.pageString) {
-            case "loading":
-                this.reloadBuffers();
-                return;
-
-            case "camera":
-                this.reloadVertexShader();
-                return;
-
-            case "lighting":
-                this.reloadPixelShader();
-                return;
-        }
-    }
+    abstract clickEvent(): void;
 
     public renderCycle(): void {
 
         var gl: WebGLRenderingContext = this.gl;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
-    }
-
-    toNumArray(strings: string[]): number[] {
-
-        var ans: number[] = new Array<number>();
-
-        strings.forEach(function (s) {
-            ans.push(+s);
-        })
-
-        return ans;
     }
 
     loadBuffers(): void {
@@ -144,104 +121,6 @@ export class WebGlHost {
         }
     }
 
-    reloadBuffers() {
-
-        // specific to loading page
-
-        var textAreaContent = this.getCodeSnippet();
-        this.vertices = this.toNumArray(textAreaContent.split(","));
-        this.loadBuffers();
-        this.loadingPageBindShaders();
-    }
-
-    reloadPixelShader(): void {
-
-        // specific to lighting page 
-
-        this.fragmentShaderCode = this.getCodeSnippet();
-        this.loadShaders();
-        this.bindPositionAndNormal();
-        this.renderCycle();
-    }
-
-    reloadVertexShader() {
-
-        // specific to camera page
-
-        this.vertexShaderCode = this.getCodeSnippet();
-        this.loadShaders();
-        this.updateSimpleCameraPosition();
-        this.renderCycle();
-    }
-
-    updateSimpleCameraPosition() {
-
-        if (!this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
-    }
-
-    public updateRotation() {
-
-        if (this.shaderProgram) {
-
-            var gl: WebGLRenderingContext = this.gl;
-            var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-            gl.uniform1f(uRotationLocation, this.rotation);
-            this.rotation = (this.rotation + 0.01) % 6.28;
-        }
-
-        this.renderCycle();
-        window.requestAnimationFrame(() => { this.updateRotation() });
-    }
-
-    bindAttribute(attributeName: string, offset: number) {
-
-        if (!this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
-        gl.enableVertexAttribArray(coord);
-    }
-
-    //#endregion
-
-
-    public updateCameraPositionOnKeyUp(event: KeyboardEvent) {
-
-        if (this.moveCamera(event.key)) {
-            this.updateSimpleCameraPosition();
-        }
-        this.renderCycle();
-    }
-
-    public moveCamera(key: string): boolean {
-
-        if (key == 'd') {
-            this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-        }
-        else if (key == 'a') {
-            this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-        }
-        else if (key == 'w') {
-            this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-        }
-        else if (key == 's') {
-            this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-        }
-        else {
-            return false;
-        }
-        return true;
-    }
-
     getCodeSnippet(): string {
 
         const codeSection: HTMLElement | null = document.getElementById("code");
@@ -265,16 +144,16 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    setupCameraMovement() {
+    bindAttribute(attributeName: string, offset: number) {
 
-        document.addEventListener('keyup', (event) => {
-            this.updateCameraPositionOnKeyUp(event);
-        }, false);
-    }
+        if (!this.shaderProgram) {
+            return;
+        }
 
-    public startRotationLoop() {
-
-        window.requestAnimationFrame(() => { this.updateRotation() });
+        var gl: WebGLRenderingContext = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
     }
 }
 

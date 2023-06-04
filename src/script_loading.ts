@@ -3,6 +3,7 @@ import { CodeParcel } from "./code_parcel.js";
 import { GetTriangleModel } from "./models/triangle.js";
 import { Model } from "./model.js";
 import { WebGlHost } from "./webglhost.js";
+import { WebGlLoadingDemo } from "./demos/loadingdemo.js";
 
 export class LoadingDemo {
 
@@ -37,7 +38,7 @@ export class LoadingDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
+                this.host = new WebGlLoadingDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.loadingPageBindShaders();
             }
         }
