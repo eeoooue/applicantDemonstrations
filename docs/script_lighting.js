@@ -3,7 +3,7 @@ import { WebGlHost } from "./webglhost.js";
 import { CodeParcel } from "./code_parcel.js";
 export class LightingDemo {
     constructor(model, parcel) {
-        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode);
+        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "lighting");
         this.populateTextArea(parcel.startingCode);
     }
     populateTextArea(startingCode) {
@@ -12,7 +12,7 @@ export class LightingDemo {
             codeSection.value = startingCode;
         }
     }
-    initializeDemo(model, vertexShaderCode, fragmentShaderCode) {
+    initializeDemo(model, vertexShaderCode, fragmentShaderCode, pageTitle) {
         const canvas = document.getElementById("webGLCanvas");
         if (canvas instanceof HTMLCanvasElement) {
             const gl = canvas.getContext("webgl");
@@ -21,7 +21,7 @@ export class LightingDemo {
                 gl.enable(gl.DEPTH_TEST);
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, "lighting");
+                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.bindPositionAndNormal();
                 this.host.startRotationLoop();
             }
@@ -44,6 +44,6 @@ const fragmentShaderCode = 'precision mediump float;\r\n\r\n' +
     'void main(void) {\r\n' +
     ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
     '}';
-const bunnyModel = GetBunnyModel();
 const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, fragmentShaderCode);
+const bunnyModel = GetBunnyModel();
 new LightingDemo(bunnyModel, parcel);

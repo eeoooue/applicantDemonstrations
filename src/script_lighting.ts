@@ -10,7 +10,7 @@ export class LightingDemo {
 
     constructor(model: Model, parcel: CodeParcel) {
 
-        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode);
+        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "lighting");
         this.populateTextArea(parcel.startingCode);
     }
 
@@ -22,7 +22,7 @@ export class LightingDemo {
         }
     }
 
-    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string) {
+    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string, pageTitle: string) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 
@@ -37,7 +37,7 @@ export class LightingDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, "lighting");
+                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.bindPositionAndNormal();
                 this.host.startRotationLoop();
             }
@@ -65,8 +65,7 @@ const fragmentShaderCode: string =
     ' gl_FragColor = vec4(v_normal * 0.5 + 0.5, 1.0);\r\n' +
     '}';
 
-    
-const bunnyModel: Model = GetBunnyModel();
 const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, fragmentShaderCode);
+const bunnyModel: Model = GetBunnyModel();
 new LightingDemo(bunnyModel, parcel);
 

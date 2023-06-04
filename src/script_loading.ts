@@ -6,12 +6,11 @@ import { CodeParcel } from "./code_parcel.js";
 
 export class LoadingDemo {
 
-    public model: Model = GetTriangleModel();
     public host: WebGlHost | undefined;
 
-    constructor(parcel: CodeParcel) {
+    constructor(model: Model, parcel: CodeParcel) {
 
-        this.initializeDemo(this.model, parcel.vertexShaderCode, parcel.fragmentShaderCode);
+        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "loading");
         this.populateTextArea(parcel.startingCode);
     }
 
@@ -23,7 +22,7 @@ export class LoadingDemo {
         }
     }
 
-    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string) {
+    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string, pageTitle: string) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 
@@ -38,7 +37,7 @@ export class LoadingDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, "loading");
+                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.loadingPageBindShaders();
             }
         }
@@ -63,6 +62,8 @@ const fragmentShaderCode: string =
     '}';
 
 const startingCode: string = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
-const LoadingParcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, startingCode);
 
-new LoadingDemo(LoadingParcel);
+
+const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, startingCode);
+const triangleModel = GetTriangleModel();
+new LoadingDemo(triangleModel, parcel);
