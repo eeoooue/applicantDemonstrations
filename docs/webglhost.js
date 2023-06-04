@@ -1,13 +1,11 @@
 export class WebGlHost {
-    constructor(glInstance, vertices, indices, vertexShaderCode, fragmentShaderCode, pageString) {
+    constructor(glInstance, vertices, indices, vertexShaderCode, fragmentShaderCode) {
         this.cameraPosition = [0.0, 0.0, 0.0];
-        this.rotation = 0;
         this.gl = glInstance;
         this.vertices = vertices;
         this.indices = indices;
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.pageString = pageString;
         this.initialiseWebGL();
         this.addButtonListener();
         this.onloadHook();
@@ -42,7 +40,6 @@ export class WebGlHost {
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
-    //#region shaderProgram
     setupShaderProgram(vertShader, fragShader) {
         if (!this.shaderProgram) {
             return;

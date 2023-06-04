@@ -1,10 +1,13 @@
 import { WebGlHost } from "../webglhost.js";
 export class WebGlCameraDemo extends WebGlHost {
+    onloadHook() {
+        this.bindPositionAndNormal();
+        this.setupCameraMovement();
+    }
     clickEvent() {
         this.reloadVertexShader();
     }
     reloadVertexShader() {
-        // specific to camera page
         this.vertexShaderCode = this.getCodeSnippet();
         this.loadShaders();
         this.updateSimpleCameraPosition();

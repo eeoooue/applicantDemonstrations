@@ -1,5 +1,8 @@
 import { WebGlHost } from "../webglhost.js";
 export class WebGlLoadingDemo extends WebGlHost {
+    onloadHook() {
+        this.loadingPageBindShaders();
+    }
     clickEvent() {
         this.reloadBuffers();
     }

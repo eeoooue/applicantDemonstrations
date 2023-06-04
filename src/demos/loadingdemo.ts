@@ -3,6 +3,11 @@ import { WebGlHost } from "../webglhost.js";
 
 export class WebGlLoadingDemo extends WebGlHost {
 
+    public override onloadHook(): void {
+
+        this.loadingPageBindShaders();
+    }
+
     public override clickEvent(): void {
         
         this.reloadBuffers();

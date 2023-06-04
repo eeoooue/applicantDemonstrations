@@ -1,5 +1,9 @@
 import { WebGlHost } from "../webglhost.js";
 export class WebGlLightingDemo extends WebGlHost {
+    constructor() {
+        super(...arguments);
+        this.rotation = 0;
+    }
     onloadHook() {
         this.bindPositionAndNormal();
         this.startRotationLoop();

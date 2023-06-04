@@ -1,33 +1,6 @@
 import { CodeParcel } from "./code_parcel.js";
 import { GetSphereModel } from "./models/sphere.js";
-import { WebGlCameraDemo } from "./demos/camerademo.js";
-export class CameraDemo {
-    constructor(model, parcel) {
-        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "camera");
-        this.populateTextArea(parcel.startingCode);
-    }
-    populateTextArea(startingCode) {
-        const codeSection = document.getElementById("code");
-        if (codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = startingCode;
-        }
-    }
-    initializeDemo(model, vertexShaderCode, fragmentShaderCode, pageTitle) {
-        const canvas = document.getElementById("webGLCanvas");
-        if (canvas instanceof HTMLCanvasElement) {
-            const gl = canvas.getContext("webgl");
-            if (gl instanceof WebGLRenderingContext) {
-                gl.clearColor(0.2, 0.2, 0.2, 1.0);
-                gl.enable(gl.DEPTH_TEST);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-                var host = new WebGlCameraDemo(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
-                host.bindPositionAndNormal();
-                host.setupCameraMovement();
-            }
-        }
-    }
-}
+import { DemoBuilder } from "./demo_builder.js";
 const vertexShaderCode = 'attribute vec3 a_position;\r\n' +
     'attribute vec3 a_normal;\r\n\r\n' +
     'uniform vec3 u_cameraPosition;\r\n\r\n' +
@@ -44,4 +17,4 @@ const fragmentShaderCode = 'precision mediump float;' +
 const startingCode = vertexShaderCode;
 const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, startingCode);
 const sphereModel = GetSphereModel();
-new CameraDemo(sphereModel, parcel);
+new DemoBuilder(sphereModel, parcel, "camera");

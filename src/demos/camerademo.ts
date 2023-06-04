@@ -3,6 +3,12 @@ import { WebGlHost } from "../webglhost.js";
 
 export class WebGlCameraDemo extends WebGlHost {
 
+    public override onloadHook(): void {
+        
+        this.bindPositionAndNormal();
+        this.setupCameraMovement();
+    }
+
     public override clickEvent(): void {
         
         this.reloadVertexShader();
@@ -10,15 +16,13 @@ export class WebGlCameraDemo extends WebGlHost {
 
     reloadVertexShader() {
 
-        // specific to camera page
-
         this.vertexShaderCode = this.getCodeSnippet();
         this.loadShaders();
         this.updateSimpleCameraPosition();
         this.renderCycle();
     }
 
-    setupCameraMovement() {
+    public setupCameraMovement() {
 
         document.addEventListener('keyup', (event) => {
             this.updateCameraPositionOnKeyUp(event);

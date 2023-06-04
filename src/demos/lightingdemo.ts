@@ -3,6 +3,8 @@ import { WebGlHost } from "../webglhost.js";
 
 export class WebGlLightingDemo extends WebGlHost {
 
+    public rotation = 0;
+
     public override onloadHook(): void {
     
         this.bindPositionAndNormal();

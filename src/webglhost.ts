@@ -10,12 +10,10 @@ export abstract class WebGlHost {
     public vertexShaderCode: string;
     public fragmentShaderCode: string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
-    public rotation = 0;
+    
     public shaderProgram: WebGLProgram | undefined | null;
 
-    public pageString: string;
-
-    constructor(glInstance: WebGLRenderingContext, vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
+    constructor(glInstance: WebGLRenderingContext, vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string) {
 
         this.gl = glInstance;
 
@@ -24,7 +22,6 @@ export abstract class WebGlHost {
 
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.pageString = pageString;
 
         this.initialiseWebGL();
         this.addButtonListener();
@@ -76,8 +73,6 @@ export abstract class WebGlHost {
         gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
-
-    //#region shaderProgram
 
     setupShaderProgram(vertShader: WebGLShader, fragShader: WebGLShader) {
 
