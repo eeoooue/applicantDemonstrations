@@ -1,48 +1,28 @@
 
+import { CodeParcel } from "./code_parcel.js";
+import { GetTriangleModel } from "./models/triangle.js";
+import { Model } from "./model.js";
 import { WebGlHost } from "./webglhost.js";
-import { TriangleModel } from "./models/triangle.js";
 
 export class LoadingDemo {
 
-    public vertexShaderCode: string =
-        'attribute vec3 a_position;' +
-        'attribute vec3 a_colour;' +
-        'varying vec4 v_colour;' +
-        'void main(void) {' +
-        ' gl_Position = vec4(a_position, 1.0);' +
-        ' v_colour = vec4(a_colour, 1.0);' +
-        '}';
-
-    public fragmentShaderCode: string =
-        'precision mediump float;' +
-        'varying vec4 v_colour;' +
-        'void main(void) {' +
-        ' gl_FragColor = v_colour;' +
-        '}';
-
-    public startingCode: string;
-
-    public model: TriangleModel = new TriangleModel();
-
     public host: WebGlHost | undefined;
 
+    constructor(model: Model, parcel: CodeParcel) {
 
-    constructor() {
-
-        this.startingCode = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
-        this.initializeDemo(this.model);
-        this.populateTextArea();
+        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "loading");
+        this.populateTextArea(parcel.startingCode);
     }
 
-    public populateTextArea() {
+    public populateTextArea(startingCode: string) {
 
         const codeSection: HTMLElement | null = document.getElementById("code");
         if (codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = this.startingCode;
+            codeSection.value = startingCode;
         }
     }
 
-    public initializeDemo(model: TriangleModel) {
+    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string, pageTitle: string) {
 
         const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
 
@@ -57,7 +37,7 @@ export class LoadingDemo {
                 gl.clear(gl.COLOR_BUFFER_BIT);
                 gl.viewport(0, 0, canvas.width, canvas.height);
 
-                this.host = new WebGlHost(gl, model.vertices, model.indices, this.vertexShaderCode, this.fragmentShaderCode, "loading");
+                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
                 this.host.loadingPageBindShaders();
             }
         }
@@ -65,4 +45,25 @@ export class LoadingDemo {
 }
 
 
-new LoadingDemo();
+const vertexShaderCode: string =
+    'attribute vec3 a_position;' +
+    'attribute vec3 a_colour;' +
+    'varying vec4 v_colour;' +
+    'void main(void) {' +
+    ' gl_Position = vec4(a_position, 1.0);' +
+    ' v_colour = vec4(a_colour, 1.0);' +
+    '}';
+
+const fragmentShaderCode: string =
+    'precision mediump float;' +
+    'varying vec4 v_colour;' +
+    'void main(void) {' +
+    ' gl_FragColor = v_colour;' +
+    '}';
+
+const startingCode: string = "0.0, 0.75, 0.0, 1.0, 0.0, 0.0,-0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0";
+
+
+const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, startingCode);
+const triangleModel = GetTriangleModel();
+new LoadingDemo(triangleModel, parcel);

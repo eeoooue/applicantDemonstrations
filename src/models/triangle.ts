@@ -1,6 +1,9 @@
+import { Model } from "../model.js";
 
-export class TriangleModel {
+export function GetTriangleModel(): Model {
 
-    public indices: number[] = [0, 1, 2];
-    public vertices: number[] = [0.0, 0.75, 0.0, 1.0, 0.0, 0.0, -0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0];
+    const vertices: number[] = [0.0, 0.75, 0.0, 1.0, 0.0, 0.0, -0.75, -0.75, 0.0, 0.0, 1.0, 0.0, 0.75, -0.75, 0.0, 0.0, 0.0, 1.0];
+    const indices: number[] = [0, 1, 2];
+
+    return new Model(vertices, indices);
 }
