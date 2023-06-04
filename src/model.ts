@@ -1,5 +1,4 @@
 
-
 export class Model {
 
     public vertices: number[];
@@ -11,4 +10,3 @@ export class Model {
         this.indices = indices;
     }
 }
-

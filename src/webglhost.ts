@@ -1,6 +1,6 @@
+import { Model } from "./model";
 
-
-export class WebGlHost {
+export abstract class WebGlHost {
 
     public gl: WebGLRenderingContext;
 
@@ -10,56 +10,34 @@ export class WebGlHost {
     public vertexShaderCode: string;
     public fragmentShaderCode: string;
     public cameraPosition: number[] = [0.0, 0.0, 0.0];
-    public rotation = 0;
+    
     public shaderProgram: WebGLProgram | undefined | null;
 
-    public pageString: string;
+    constructor(webGl: WebGLRenderingContext, model: Model, vertexShaderCode: string, fragmentShaderCode: string) {
 
-    constructor(glInstance: WebGLRenderingContext, vertices: number[], indices: number[], vertexShaderCode: string, fragmentShaderCode: string, pageString: string) {
-
-        this.gl = glInstance;
-
-        this.vertices = vertices;
-        this.indices = indices;
+        this.gl = webGl;
+        this.vertices = model.vertices;
+        this.indices = model.indices;
 
         this.vertexShaderCode = vertexShaderCode;
         this.fragmentShaderCode = fragmentShaderCode;
-        this.pageString = pageString;
-
-        this.initialiseWebGL();
-        this.addButtonListener();
-    }
-
-    private initialiseWebGL(): void {
 
         this.loadBuffers();
         this.loadShaders();
+        this.addButtonListener();
+        this.onloadHook();
     }
+
+    public onloadHook(): void { }
+
+    abstract clickEvent(): void;
 
     public addButtonListener(): void {
 
         var button = document.getElementById("update-button")
-
         button?.addEventListener("click", () => {
             this.clickEvent();
         })
-    }
-
-    public clickEvent(): void {
-
-        switch (this.pageString) {
-            case "loading":
-                this.reloadBuffers();
-                return;
-
-            case "camera":
-                this.reloadVertexShader();
-                return;
-
-            case "lighting":
-                this.reloadPixelShader();
-                return;
-        }
     }
 
     public renderCycle(): void {
@@ -67,17 +45,6 @@ export class WebGlHost {
         var gl: WebGLRenderingContext = this.gl;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
-    }
-
-    toNumArray(strings: string[]): number[] {
-
-        var ans: number[] = new Array<number>();
-
-        strings.forEach(function (s) {
-            ans.push(+s);
-        })
-
-        return ans;
     }
 
     loadBuffers(): void {
@@ -100,8 +67,6 @@ export class WebGlHost {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, Index_Buffer);
     }
 
-    //#region shaderProgram
-
     setupShaderProgram(vertShader: WebGLShader, fragShader: WebGLShader) {
 
         if (!this.shaderProgram) {
@@ -118,8 +83,6 @@ export class WebGlHost {
 
 
     loadShaders(): void {
-
-        // this is always called by any webgl demo
 
         var gl: WebGLRenderingContext = this.gl;
         const vertShader = this.compileShader(gl.VERTEX_SHADER, this.vertexShaderCode);
@@ -142,104 +105,6 @@ export class WebGlHost {
             gl.compileShader(shader);
             return shader;
         }
-    }
-
-    reloadBuffers() {
-
-        // specific to loading page
-
-        var textAreaContent = this.getCodeSnippet();
-        this.vertices = this.toNumArray(textAreaContent.split(","));
-        this.loadBuffers();
-        this.loadingPageBindShaders();
-    }
-
-    reloadPixelShader(): void {
-
-        // specific to lighting page 
-
-        this.fragmentShaderCode = this.getCodeSnippet();
-        this.loadShaders();
-        this.bindPositionAndNormal();
-        this.renderCycle();
-    }
-
-    reloadVertexShader() {
-
-        // specific to camera page
-
-        this.vertexShaderCode = this.getCodeSnippet();
-        this.loadShaders();
-        this.updateSimpleCameraPosition();
-        this.renderCycle();
-    }
-
-    updateSimpleCameraPosition() {
-
-        if (!this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        var uCamPosLocation = gl.getUniformLocation(this.shaderProgram, "u_cameraPosition");
-        gl.uniform3f(uCamPosLocation, this.cameraPosition[0], this.cameraPosition[1], this.cameraPosition[2]);
-    }
-
-    public updateRotation() {
-
-        if (this.shaderProgram) {
-
-            var gl: WebGLRenderingContext = this.gl;
-            var uRotationLocation = gl.getUniformLocation(this.shaderProgram, "u_rotation");
-            gl.uniform1f(uRotationLocation, this.rotation);
-            this.rotation = (this.rotation + 0.01) % 6.28;
-        }
-
-        this.renderCycle();
-        window.requestAnimationFrame(() => { this.updateRotation() });
-    }
-
-    bindAttribute(attributeName: string, offset: number) {
-
-        if (!this.shaderProgram) {
-            return;
-        }
-
-        var gl: WebGLRenderingContext = this.gl;
-        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
-        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
-        gl.enableVertexAttribArray(coord);
-    }
-
-    //#endregion
-
-
-    public updateCameraPositionOnKeyUp(event: KeyboardEvent) {
-
-        if (this.moveCamera(event.key)) {
-            this.updateSimpleCameraPosition();
-        }
-        this.renderCycle();
-    }
-
-    public moveCamera(key: string): boolean {
-
-        if (key == 'd') {
-            this.cameraPosition[0] = this.cameraPosition[0] + 0.05;
-        }
-        else if (key == 'a') {
-            this.cameraPosition[0] = this.cameraPosition[0] - 0.05;
-        }
-        else if (key == 'w') {
-            this.cameraPosition[1] = this.cameraPosition[1] + 0.05;
-        }
-        else if (key == 's') {
-            this.cameraPosition[1] = this.cameraPosition[1] - 0.05;
-        }
-        else {
-            return false;
-        }
-        return true;
     }
 
     getCodeSnippet(): string {
@@ -265,16 +130,15 @@ export class WebGlHost {
         this.renderCycle();
     }
 
-    setupCameraMovement() {
+    bindAttribute(attributeName: string, offset: number) {
 
-        document.addEventListener('keyup', (event) => {
-            this.updateCameraPositionOnKeyUp(event);
-        }, false);
-    }
+        if (!this.shaderProgram) {
+            return;
+        }
 
-    public startRotationLoop() {
-
-        window.requestAnimationFrame(() => { this.updateRotation() });
+        var gl: WebGLRenderingContext = this.gl;
+        var coord = gl.getAttribLocation(this.shaderProgram, attributeName);
+        gl.vertexAttribPointer(coord, 3, gl.FLOAT, false, 6 * 4, offset);
+        gl.enableVertexAttribArray(coord);
     }
 }
-

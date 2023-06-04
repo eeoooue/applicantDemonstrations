@@ -2,48 +2,7 @@
 import { CodeParcel } from "./code_parcel.js";
 import { GetSphereModel } from "./models/sphere.js";
 import { Model } from "./model.js";
-import { WebGlHost } from "./webglhost.js";
-
-
-export class CameraDemo {
-
-    constructor(model: Model, parcel: CodeParcel) {
-
-        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "camera");
-        this.populateTextArea(parcel.startingCode);
-    }
-
-    public populateTextArea(startingCode: string) {
-
-        const codeSection: HTMLElement | null = document.getElementById("code");
-        if (codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = startingCode;
-        }
-    }
-
-    public initializeDemo(model: Model, vertexShaderCode: string, fragmentShaderCode: string, pageTitle: string) {
-
-        const canvas: HTMLElement | null = document.getElementById("webGLCanvas");
-
-        if (canvas instanceof HTMLCanvasElement) {
-
-            const gl: WebGLRenderingContext | null = canvas.getContext("webgl");
-
-            if (gl instanceof WebGLRenderingContext) {
-
-                gl.clearColor(0.2, 0.2, 0.2, 1.0);
-                gl.enable(gl.DEPTH_TEST);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-
-                var host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
-                host.bindPositionAndNormal();
-                host.setupCameraMovement();
-            }
-        }
-    }
-}
-
+import { DemoBuilder } from "./demo_builder.js";
 
 const vertexShaderCode: string =
     'attribute vec3 a_position;\r\n' +
@@ -66,4 +25,4 @@ const startingCode: string = vertexShaderCode;
 
 const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, startingCode);
 const sphereModel: Model = GetSphereModel();
-new CameraDemo(sphereModel, parcel);
+new DemoBuilder(sphereModel, parcel, "camera");

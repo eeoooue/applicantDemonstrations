@@ -1,33 +1,6 @@
 import { CodeParcel } from "./code_parcel.js";
 import { GetBunnyModel } from "./models/stanfordbunny.js";
-import { WebGlHost } from "./webglhost.js";
-export class LightingDemo {
-    constructor(model, parcel) {
-        this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "lighting");
-        this.populateTextArea(parcel.startingCode);
-    }
-    populateTextArea(startingCode) {
-        const codeSection = document.getElementById("code");
-        if (codeSection instanceof HTMLTextAreaElement) {
-            codeSection.value = startingCode;
-        }
-    }
-    initializeDemo(model, vertexShaderCode, fragmentShaderCode, pageTitle) {
-        const canvas = document.getElementById("webGLCanvas");
-        if (canvas instanceof HTMLCanvasElement) {
-            const gl = canvas.getContext("webgl");
-            if (gl instanceof WebGLRenderingContext) {
-                gl.clearColor(0.2, 0.2, 0.2, 1.0);
-                gl.enable(gl.DEPTH_TEST);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-                this.host = new WebGlHost(gl, model.vertices, model.indices, vertexShaderCode, fragmentShaderCode, pageTitle);
-                this.host.bindPositionAndNormal();
-                this.host.startRotationLoop();
-            }
-        }
-    }
-}
+import { DemoBuilder } from "./demo_builder.js";
 const vertexShaderCode = 'attribute vec3 a_position;\r\n' +
     'attribute vec3 a_normal;\r\n\r\n' +
     'uniform float u_rotation;\r\n\r\n' +
@@ -46,4 +19,4 @@ const fragmentShaderCode = 'precision mediump float;\r\n\r\n' +
     '}';
 const parcel = new CodeParcel(vertexShaderCode, fragmentShaderCode, fragmentShaderCode);
 const bunnyModel = GetBunnyModel();
-new LightingDemo(bunnyModel, parcel);
+new DemoBuilder(bunnyModel, parcel, "lighting");
