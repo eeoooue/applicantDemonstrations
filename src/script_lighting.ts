@@ -1,8 +1,8 @@
 
-import { Model } from "./model.js";
-import { GetBunnyModel } from "./models/stanfordbunny.js";
-import { WebGlHost } from "./webglhost.js";
 import { CodeParcel } from "./code_parcel.js";
+import { GetBunnyModel } from "./models/stanfordbunny.js";
+import { Model } from "./model.js";
+import { WebGlHost } from "./webglhost.js";
 
 export class LightingDemo {
 

@@ -1,6 +1,6 @@
-import { WebGlHost } from "./webglhost.js";
-import { GetTriangleModel } from "./models/triangle.js";
 import { CodeParcel } from "./code_parcel.js";
+import { GetTriangleModel } from "./models/triangle.js";
+import { WebGlHost } from "./webglhost.js";
 export class LoadingDemo {
     constructor(model, parcel) {
         this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "loading");

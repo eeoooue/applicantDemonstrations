@@ -1,6 +1,6 @@
+import { CodeParcel } from "./code_parcel.js";
 import { GetBunnyModel } from "./models/stanfordbunny.js";
 import { WebGlHost } from "./webglhost.js";
-import { CodeParcel } from "./code_parcel.js";
 export class LightingDemo {
     constructor(model, parcel) {
         this.initializeDemo(model, parcel.vertexShaderCode, parcel.fragmentShaderCode, "lighting");

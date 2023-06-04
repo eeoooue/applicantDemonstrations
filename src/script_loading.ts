@@ -1,8 +1,8 @@
 
-import { WebGlHost } from "./webglhost.js";
+import { CodeParcel } from "./code_parcel.js";
 import { GetTriangleModel } from "./models/triangle.js";
 import { Model } from "./model.js";
-import { CodeParcel } from "./code_parcel.js";
+import { WebGlHost } from "./webglhost.js";
 
 export class LoadingDemo {
 
